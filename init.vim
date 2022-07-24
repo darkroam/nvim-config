@@ -1,45 +1,23 @@
 " 设置leader键
 let mapleader =","
 
-" 自动下载插件管理插件plug.vim
-if ! filereadable(system('echo -n "$HOME/.config/nvim/autoload/plug.vim"'))
-	echo "Downloading junegunn/vim-plug to manage plugins..."
-	silent !mkdir -p $HOME/.config/nvim/autoload/
-	silent !curl "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" > $HOME/.config/nvim/autoload/plug.vim
-	autocmd VimEnter * PlugInstall
-endif
-
+" -1-*-------------------- 全局变量配置 --------------------
 " 配置python路径,如果必要的话
 "let g:python_host_prog='/usr/bin/python2'
 "let g:python3_host_prog='/usr/bin/python3'
 "let g:mkdp_browser = 'firefox'
+if has('win32')
+	let g:plug_home = stdpath('data') . '/plugged'
+endif
+if has('linux')
+	let g:plug_home = system('echo -n "$HOME/.config/nvim/plugged"')
+endif
+if has('unix')
+	let g:plug_home = system('echo -n "$HOME/.config/nvim/plugged"')
+endif
 
-" Compile function 目前只有sh、python、markdown(vimwiki)、tex和go
-noremap R :call CompileRunGcc()<CR>
-func! CompileRunGcc()
-	exec "w"
-	if &filetype == 'sh'
-		:!time bash %
-	elseif &filetype == 'python'
-		set splitbelow
-		:sp
-		:term python3 %
-	elseif &filetype == 'markdown'
-		exec "MarkdownPreview"
-	elseif &filetype == 'vimwiki'
-		exec "MarkdownPreview"
-	elseif &filetype == 'tex'
-		silent! exec "VimtexStop"
-		silent! exec "VimtexCompile"
-	elseif &filetype == 'go'
-		set splitbelow
-		:sp
-		:term go run %
-	endif
-endfunc
-
-" 加载插件
-call plug#begin(system('echo -n "$HOME/.config/nvim/plugged"'))
+" -2-*-------------------- 加载插件 --------------------
+call plug#begin()
 Plug 'tpope/vim-surround' " N模式：ds(删除，cs'(替换，ysiw(增加，yss(整行添加, V模式：S(对对象添加
 Plug 'preservim/nerdtree' " ,n 呼叫出侧栏
 "Plug 'junegunn/goyo.vim'
@@ -121,6 +99,21 @@ Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'nvim-orgmode/orgmode'
 
 "Plug 'akinsho/org-bullets.nvim'
+
+Plug 'vim-scripts/matchit.zip'
+Plug 'Townk/vim-autoclose'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-unimpaired'
+Plug 'kien/ctrlp.vim'
+Plug 'yegappan/mru'
+Plug 'vim-scripts/taglist.vim'
+Plug 'rickhowe/diffchar.vim'
+Plug 'mbbill/undotree'
+Plug 'vim-scripts/YankRing.vim'
+Plug 'vim-scripts/vcscommand.vim'
+Plug 'terryma/vim-expand-region'
+Plug 'kana/vim-textobj-user'
+Plug 'vim-scripts/ZoomWin'
 
 call plug#end()
 
@@ -576,3 +569,27 @@ require('orgmode').setup({
 })
 
 EOF
+
+" Compile function 目前只有sh、python、markdown(vimwiki)、tex和go
+noremap R :call CompileRunGcc()<CR>
+func! CompileRunGcc()
+	exec "w"
+	if &filetype == 'sh'
+		:!time bash %
+	elseif &filetype == 'python'
+		set splitbelow
+		:sp
+		:term python3 %
+	elseif &filetype == 'markdown'
+		exec "MarkdownPreview"
+	elseif &filetype == 'vimwiki'
+		exec "MarkdownPreview"
+	elseif &filetype == 'tex'
+		silent! exec "VimtexStop"
+		silent! exec "VimtexCompile"
+	elseif &filetype == 'go'
+		set splitbelow
+		:sp
+		:term go run %
+	endif
+endfunc

@@ -428,7 +428,8 @@ imap <C-j> <Plug>(coc-snippets-expand-jump)
 " === Markdown Settings
 " ===
 " Snippets
-source $HOME/.config/nvim/md-snippets.vim
+"source $HOME/.config/nvim/md-snippets.vim
+source ./md-snippets.vim
 " auto spell
 autocmd BufRead,BufNewFile *.md setlocal spell
 

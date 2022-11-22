@@ -42,7 +42,7 @@ telescope.setup {
 
 telescope.load_extension("file_browser")
 
-vim.keymap.set('n', ',ff',
+vim.keymap.set('n', ',rr',
   function()
     builtin.find_files({
       no_ignore = false,

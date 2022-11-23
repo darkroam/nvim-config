@@ -1,7 +1,8 @@
 require('base')
-require('highlights')
+require('color')
 require('maps')
 require('plugins')
+require('other')
 
 local has = vim.fn.has
 local is_mac = has "macunix"

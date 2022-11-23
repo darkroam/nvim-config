@@ -17,6 +17,12 @@ telescope.setup {
       },
     },
   },
+  layout_config = {
+    horizontal = {
+      preview_cutoff = 100,
+      preview_width = 0.6,
+    },
+  },
   extensions = {
     file_browser = {
       theme = "dropdown",

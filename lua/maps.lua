@@ -1,6 +1,10 @@
 local keymap = vim.keymap
 
+vim.g.mapleader = ","
+
 keymap.set('i', 'kj', '<ESC>')
+keymap.set('n', ',xc', '<Cmd>q<CR>')
+keymap.set('n', ',xs', '<Cmd>w<CR>')
 
 -- Do not yank with x
 keymap.set('n', 'x', '"_x')
@@ -32,17 +36,13 @@ keymap.set('', ',wj', '<C-w>j')
 keymap.set('', ',wk', '<C-w>k')
 keymap.set('', ',wl', '<C-w>l')
 keymap.set('n', '<Space>', '<C-w>w')
-keymap.set('', 's<left>', '<C-w>h')
-keymap.set('', 's<down>', '<C-w>j')
-keymap.set('', 's<up>', '<C-w>k')
-keymap.set('', 's<right>', '<C-w>l')
 keymap.set('', 'sh', '<C-w>h')
 keymap.set('', 'sj', '<C-w>j')
 keymap.set('', 'sk', '<C-w>k')
 keymap.set('', 'sl', '<C-w>l')
 
 -- Resize window
-keymap.set('n', '<C-w><left>', '<C-w><')
-keymap.set('n', '<C-w><right>', '<C-w>>')
-keymap.set('n', '<C-w><up>', '<C-w>+')
-keymap.set('n', '<C-w><down>', '<C-w>-')
+keymap.set('n', ',s<left>', '<C-w><')
+keymap.set('n', ',s<right>', '<C-w>>')
+keymap.set('n', ',s<up>', '<C-w>+')
+keymap.set('n', ',s<down>', '<C-w>-')

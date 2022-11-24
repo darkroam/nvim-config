@@ -1,4 +1,4 @@
-require('base')
+require('darkroam.options')
 require('color')
 require('maps')
 require('plugins')

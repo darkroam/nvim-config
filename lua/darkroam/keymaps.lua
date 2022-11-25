@@ -68,7 +68,7 @@ keymap("i", "kj", "<ESC>", opts)
 
 keymap('n', '<leader>xc', '<Cmd>q<CR>', opts)
 keymap('n', '<leader>xs', '<Cmd>w<CR>', opts)
-keymap('n', '<leader>xm', ':', opts)
+keymap('n', '<leader>xm', ':', { silent = false })
 
 -- Do not yank with x
 keymap('n', 'x', '"_x', opts)
@@ -105,6 +105,11 @@ keymap("v", "p", '"_dP', opts)
 -- keymap("x", "K", ":move '<-2<CR>gv-gv", opts)
 keymap("x", "<A-j>", ":move '>+1<CR>gv-gv", opts)
 keymap("x", "<A-k>", ":move '<-2<CR>gv-gv", opts)
+
+-- block replace
+keymap("x", ",rb", ":s/", { silent = false })
+keymap("v", ",rb", ":s/", { silent = false })
+keymap("n", ",rb", ":%s/", { silent = false })
 
 -- Terminal --
 -- Better terminal navigation

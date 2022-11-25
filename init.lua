@@ -1,7 +1,7 @@
 require('darkroam.options')
 require('darkroam.keymaps')
+require('darkroam.plugins')
 require('color')
-require('plugins')
 require('other')
 
 local has = vim.fn.has

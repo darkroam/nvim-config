@@ -1,6 +1,6 @@
 require('darkroam.options')
+require('darkroam.keymaps')
 require('color')
-require('maps')
 require('plugins')
 require('other')
 

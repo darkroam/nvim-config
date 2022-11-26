@@ -46,11 +46,16 @@ return packer.startup(function(use)
   use 'wbthomason/packer.nvim'
   use "nvim-lua/popup.nvim" -- An implementation of the Popup API from vim in Neovim
   use "nvim-lua/plenary.nvim" -- Useful lua functions used ny lots of plugins -- Common utilities
+
+  -- Colorschemes
+  -- use "lunarvim/colorschemes" -- A bunch of colorschemes you can try out
+  -- use "lunarvim/darkplus.nvim"
+  -- use "folke/tokyonight.nvim" -- A bunch of colorschemes you can try out
+  -- use 'sainnhe/everforest'
   use {
     'svrana/neosolarized.nvim',
     requires = { 'tjdevries/colorbuddy.nvim' }
   }
-  use 'sainnhe/everforest'
 
   use 'hoob3rt/lualine.nvim' -- Statusline
   use 'onsails/lspkind-nvim' -- vscode-like pictograms

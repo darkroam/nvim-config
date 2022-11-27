@@ -56,14 +56,21 @@ return packer.startup(function(use)
     'svrana/neosolarized.nvim',
     requires = { 'tjdevries/colorbuddy.nvim' }
   }
-
   use 'hoob3rt/lualine.nvim' -- Statusline
-  use 'onsails/lspkind-nvim' -- vscode-like pictograms
+
+  -- cmp plugins
+  use "hrsh7th/nvim-cmp" -- The completion plugin
   use 'hrsh7th/cmp-buffer' -- nvim-cmp source for buffer words
-  use 'hrsh7th/cmp-nvim-lsp' -- nvim-cmp source for neovim's built-in LSP
-  use 'hrsh7th/cmp-path' --
-  use 'hrsh7th/cmp-cmdline' --
-  use 'hrsh7th/nvim-cmp' -- Completion
+  use "hrsh7th/cmp-path" -- path completions
+  use "hrsh7th/cmp-cmdline" -- cmdline completions
+  -- use 'hrsh7th/cmp-nvim-lsp' -- nvim-cmp source for neovim's built-in LSP
+  use "saadparwaiz1/cmp_luasnip" -- snippet completions
+  -- use 'onsails/lspkind-nvim' -- vscode-like pictograms
+
+  -- snippets
+  use "L3MON4D3/LuaSnip" -- sinppet engine; cmp.nvim need a snippet engine to work.
+  use "rafamadriz/friendly-snippets" -- a bunch of snippets to use
+
   use 'neovim/nvim-lspconfig' -- LSP
   use 'jose-elias-alvarez/null-ls.nvim' -- Use Neovim as a language server to inject LSP diagnostics, code actions, and more via Lua.
   use 'williamboman/mason.nvim'
@@ -71,8 +78,6 @@ return packer.startup(function(use)
 
   use 'glepnir/lspsaga.nvim' -- LSP UIs
   -- use 'MunifTanjim/prettier.nvim' -- Prettier plugin for Neovim's build-in LSP client_source_map
-  use 'L3MON4D3/LuaSnip' -- Sinppet ; cmp.nvim need a snippet engine to work.
-  use 'saadparwaiz1/cmp_luasnip'
   use {
     'nvim-treesitter/nvim-treesitter',
     run = ':TSUpdate'

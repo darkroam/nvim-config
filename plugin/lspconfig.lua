@@ -61,7 +61,7 @@ protocol.CompletionItemKind = {
 }
 
 -- Set up completion using nvim_cmp with LSP source
-local capabilities = require('cmp_nvim_lsp').default_capabilities()
+-- local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 -- This is the default in Nvim 0.7+
 local lsp_flags = { debounce_text_changes = 150 }

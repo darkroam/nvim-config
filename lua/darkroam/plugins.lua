@@ -63,7 +63,8 @@ return packer.startup(function(use)
   use 'hrsh7th/cmp-buffer' -- nvim-cmp source for buffer words
   use "hrsh7th/cmp-path" -- path completions
   use "hrsh7th/cmp-cmdline" -- cmdline completions
-  -- use 'hrsh7th/cmp-nvim-lsp' -- nvim-cmp source for neovim's built-in LSP
+  use 'hrsh7th/cmp-nvim-lsp' -- nvim-cmp source for neovim's built-in LSP
+  use 'hrsh7th/cmp-nvim-lua' -- nvim-cmp source for lua
   use "saadparwaiz1/cmp_luasnip" -- snippet completions
   -- use 'onsails/lspkind-nvim' -- vscode-like pictograms
 
@@ -71,6 +72,7 @@ return packer.startup(function(use)
   use "L3MON4D3/LuaSnip" -- sinppet engine; cmp.nvim need a snippet engine to work.
   use "rafamadriz/friendly-snippets" -- a bunch of snippets to use
 
+  -- LSP
   use 'neovim/nvim-lspconfig' -- LSP
   use 'jose-elias-alvarez/null-ls.nvim' -- Use Neovim as a language server to inject LSP diagnostics, code actions, and more via Lua.
   use 'williamboman/mason.nvim'

@@ -46,6 +46,8 @@ return packer.startup(function(use)
   use 'wbthomason/packer.nvim'
   use "nvim-lua/popup.nvim" -- An implementation of the Popup API from vim in Neovim
   use "nvim-lua/plenary.nvim" -- Useful lua functions used ny lots of plugins -- Common utilities
+  use "windwp/nvim-autopairs" -- Autopairs, integrates with both cmp and treesitter
+  use 'windwp/nvim-ts-autotag'
 
   -- Colorschemes
   -- use "lunarvim/colorschemes" -- A bunch of colorschemes you can try out
@@ -83,14 +85,16 @@ return packer.startup(function(use)
   use 'nvim-telescope/telescope.nvim'
   use 'nvim-telescope/telescope-file-browser.nvim'
 
-  -- use 'MunifTanjim/prettier.nvim' -- Prettier plugin for Neovim's build-in LSP client_source_map
+  -- Treesitter
   use {
-    'nvim-treesitter/nvim-treesitter',
-    run = ':TSUpdate'
+    "nvim-treesitter/nvim-treesitter",
+    run = ":TSUpdate",
   }
+  use "p00f/nvim-ts-rainbow"
+  -- use "nvim-treesitter/playground"
+
+  -- use 'MunifTanjim/prettier.nvim' -- Prettier plugin for Neovim's build-in LSP client_source_map
   use 'kyazdani42/nvim-web-devicons' -- File icons
-  use 'windwp/nvim-autopairs'
-  use 'windwp/nvim-ts-autotag'
   use 'norcalli/nvim-colorizer.lua'
   use 'folke/zen-mode.nvim'
   use({

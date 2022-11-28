@@ -25,12 +25,14 @@ ts.setup {
   },
   sync_install = false, -- install languages synchronously (only applied to 'ensure_installed')
   ignore_install = { "" }, -- List of parsers to ignore installing
+  -- for plugin("nvim-autopairs")
   autopairs = {
     enable = true,
   },
   autotag = {
     enable = true,
   },
+  -- for plugin("nvim-ts-rainbow")
   rainbow = {
     enable = true,
     -- disable = { "jsx", "cpp" }, list of languages you want to disable the plugin for
@@ -39,6 +41,12 @@ ts.setup {
     -- colors = {}, -- table of hex strings
     -- termcolors = {} -- table of colour name strings
   },
+  -- for plugin("nvim-ts-context-commentstring")
+  context_commentstring = {
+    enable = true,
+    enable_autocmd = false,
+  },
+  -- for plugin("playground")
   -- playground = {
   --   enable = true,
   -- },

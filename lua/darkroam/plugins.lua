@@ -48,6 +48,7 @@ return packer.startup(function(use)
   use "nvim-lua/plenary.nvim" -- Useful lua functions used ny lots of plugins -- Common utilities
   use "windwp/nvim-autopairs" -- Autopairs, integrates with both cmp and treesitter
   use 'windwp/nvim-ts-autotag'
+  use "numToStr/Comment.nvim" -- Easily comment stuff
 
   -- Colorschemes
   -- use "lunarvim/colorschemes" -- A bunch of colorschemes you can try out
@@ -91,6 +92,7 @@ return packer.startup(function(use)
     run = ":TSUpdate",
   }
   use "p00f/nvim-ts-rainbow"
+  use 'JoosepAlviste/nvim-ts-context-commentstring'
   -- use "nvim-treesitter/playground"
 
   -- use 'MunifTanjim/prettier.nvim' -- Prettier plugin for Neovim's build-in LSP client_source_map
@@ -107,7 +109,6 @@ return packer.startup(function(use)
   use 'dinhhuy258/git.nvim' -- For git blame & browser
 
   use 'rmagatti/alternate-toggler'
-  use 'numToStr/Comment.nvim'
   use 'wellle/targets.vim'
   use 'mg979/vim-visual-multi'
 

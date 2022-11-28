@@ -95,6 +95,11 @@ return packer.startup(function(use)
   use 'JoosepAlviste/nvim-ts-context-commentstring'
   -- use "nvim-treesitter/playground"
 
+  -- Git
+  use 'lewis6991/gitsigns.nvim'
+  -- use 'dinhhuy258/git.nvim' -- For git blame & browser
+  use { "TimUntersberger/neogit", requires = 'nvim-lua/plenary.nvim'}
+
   -- use 'MunifTanjim/prettier.nvim' -- Prettier plugin for Neovim's build-in LSP client_source_map
   use 'kyazdani42/nvim-web-devicons' -- File icons
   use 'norcalli/nvim-colorizer.lua'
@@ -104,9 +109,6 @@ return packer.startup(function(use)
     run = function() vim.fn["mkdp#util#install"]() end,
   })
   use 'akinsho/nvim-bufferline.lua'
-
-  use 'lewis6991/gitsigns.nvim'
-  use 'dinhhuy258/git.nvim' -- For git blame & browser
 
   use 'rmagatti/alternate-toggler'
   use 'wellle/targets.vim'

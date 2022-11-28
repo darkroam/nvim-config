@@ -49,6 +49,8 @@ return packer.startup(function(use)
   use "windwp/nvim-autopairs" -- Autopairs, integrates with both cmp and treesitter
   use 'windwp/nvim-ts-autotag'
   use "numToStr/Comment.nvim" -- Easily comment stuff
+  use 'nvim-tree/nvim-web-devicons' -- File icons
+  use 'nvim-tree/nvim-tree.lua' -- File icons
 
   -- Colorschemes
   -- use "lunarvim/colorschemes" -- A bunch of colorschemes you can try out
@@ -101,7 +103,6 @@ return packer.startup(function(use)
   use { "TimUntersberger/neogit", requires = 'nvim-lua/plenary.nvim'}
 
   -- use 'MunifTanjim/prettier.nvim' -- Prettier plugin for Neovim's build-in LSP client_source_map
-  use 'kyazdani42/nvim-web-devicons' -- File icons
   use 'norcalli/nvim-colorizer.lua'
   use 'folke/zen-mode.nvim'
   use({

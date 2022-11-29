@@ -79,8 +79,9 @@ keymap("n", "<S-k>", ":bprevious<CR>", opts)
 -- Insert --
 -- Press kj fast to enter
 keymap("i", "kj", "<ESC>", opts)
-keymap("i", "C-e", "<ESC>A", opts)
-keymap("i", "C-a", "<ESC>I", opts)
+
+-- keymap("i", "C-e", "<ESC>A", opts)
+-- keymap("i", "C-a", "<ESC>I", opts)
 
 keymap("n", "<leader>xc", "<Cmd>q<CR>", opts)
 keymap("n", "<leader>xs", "<Cmd>w<CR>", opts)

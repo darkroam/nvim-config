@@ -16,12 +16,12 @@ if fn.empty(fn.glob(install_path)) > 0 then
 end
 
 -- Autocommand that reloads neovim whenever you save the plugins.lua file
--- vim.cmd [[
+-- vim.cmd([[
 --   augroup packer_user_config
 --   autocmd!
 --   autocmd BufWritePost plugins.lua source <afile> | PackerSync
 --   augroup end
--- ]]
+-- ]])
 
 -- Use a protected call so we don't error out on first use
 local status, packer = pcall(require, "packer")
@@ -30,7 +30,7 @@ if not status then
 	return
 end
 
--- vim.cmd [[packadd packer.nvim]]
+-- vim.cmd([[packadd packer.nvim]])
 
 -- Have packer use a popup window
 packer.init({
@@ -58,10 +58,10 @@ return packer.startup(function(use)
 	use("lewis6991/impatient.nvim") -- Speed up loading lua modules in Neovim to improve startup time
 
 	-- Colorschemes
-	-- use "lunarvim/colorschemes" -- A bunch of colorschemes you can try out
-	-- use "lunarvim/darkplus.nvim"
-	-- use "folke/tokyonight.nvim" -- A bunch of colorschemes you can try out
-	-- use 'sainnhe/everforest'
+	-- use("lunarvim/colorschemes") -- A bunch of colorschemes you can try out
+	-- use("lunarvim/darkplus.nvim")
+	-- use("folke/tokyonight.nvim") -- A bunch of colorschemes you can try out
+	-- use("sainnhe/everforest")
 	use({
 		"svrana/neosolarized.nvim",
 		requires = { "tjdevries/colorbuddy.nvim" },
@@ -76,7 +76,7 @@ return packer.startup(function(use)
 	use("hrsh7th/cmp-nvim-lsp") -- nvim-cmp source for neovim's built-in LSP
 	use("hrsh7th/cmp-nvim-lua") -- nvim-cmp source for lua
 	use("saadparwaiz1/cmp_luasnip") -- snippet completions
-	-- use 'onsails/lspkind-nvim' -- vscode-like pictograms
+	-- use("onsails/lspkind-nvim") -- vscode-like pictograms
 
 	-- snippets
 	use("L3MON4D3/LuaSnip") -- sinppet engine; cmp.nvim need a snippet engine to work.
@@ -104,14 +104,14 @@ return packer.startup(function(use)
 	})
 	use("p00f/nvim-ts-rainbow")
 	use("JoosepAlviste/nvim-ts-context-commentstring")
-	-- use "nvim-treesitter/playground"
+	-- use("nvim-treesitter/playground")
 
 	-- Git
 	use("lewis6991/gitsigns.nvim")
-	-- use 'dinhhuy258/git.nvim' -- For git blame & browser
+	-- use("dinhhuy258/git.nvim") -- For git blame & browser
 	use({ "TimUntersberger/neogit", requires = "nvim-lua/plenary.nvim" })
 
-	-- use 'MunifTanjim/prettier.nvim' -- Prettier plugin for Neovim's build-in LSP client_source_map
+	-- use("MunifTanjim/prettier.nvim") -- Prettier plugin for Neovim's build-in LSP client_source_map
 	use("norcalli/nvim-colorizer.lua")
 	use("folke/zen-mode.nvim")
 	use({

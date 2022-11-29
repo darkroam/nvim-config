@@ -19,8 +19,19 @@ vim.g.maplocalleader = ","
 --   command_mode = "c",
 
 -- Normal --
--- New tab
-keymap('n', 'te', ':tabedit<Return>', term_opts)
+-- New tab & Close tab
+keymap('n', '<leader>tn', ':tabedit<CR>', term_opts)
+-- keymap('n', '<leader>tn', ':tabnew<CR>', term_opts)
+keymap('n', '<leader>tc', ':tabclose<CR>', term_opts)
+-- Switch to current dir
+keymap('n', '<leader>cd', ':cd %:p:h<CR>', term_opts)
+-- remove trailing spaces
+-- keymap('n', '<leader>tr', ':%s/ \+$//g<CR>', { silent = false })
+-- suspend neovim
+keymap('n', '<leader>xc', ':suspend<CR>', term_opts)
+-- Plug("vim-expand-region")
+-- keymap('n', '<leader>xx', ':suspend<CR>', term_opts)
+-- map <leader>xx <Plug>(expand_region_expand)
 
 -- Move windows navigation
 keymap('n', '<leader>xo', '<C-w>w', opts)
@@ -43,6 +54,7 @@ keymap("n", "<leader>e", ":NvimTreeToggle<cr>", opts)
 -- keymap("n", "<leader>e", ":Lex 30<cr>", opts)
 
 -- Split windows
+keymap('n', '<leader>x1', '<C-w>o', term_opts)
 keymap('n', '<leader>x2', ':split<Return><C-w>w', term_opts)
 keymap('n', '<leader>x3', ':vsplit<Return><C-w>w', term_opts)
 keymap('n', 'ss', ':split<Return><C-w>w', term_opts)

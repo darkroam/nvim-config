@@ -51,6 +51,7 @@ return packer.startup(function(use)
   use "numToStr/Comment.nvim" -- Easily comment stuff
   use 'nvim-tree/nvim-web-devicons' -- File icons
   use 'nvim-tree/nvim-tree.lua' -- File icons
+  use 'terryma/vim-expand-region'
 
   -- Colorschemes
   -- use "lunarvim/colorschemes" -- A bunch of colorschemes you can try out

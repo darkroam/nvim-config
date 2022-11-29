@@ -51,7 +51,9 @@ return packer.startup(function(use)
   use "numToStr/Comment.nvim" -- Easily comment stuff
   use 'nvim-tree/nvim-web-devicons' -- File icons
   use 'nvim-tree/nvim-tree.lua' -- File icons
-  use 'terryma/vim-expand-region'
+  use 'terryma/vim-expand-region' -- A simple plugins for expand region, key binding '+'/'-'
+  use 'akinsho/nvim-bufferline.lua'
+  use 'rmagatti/alternate-toggler' -- A simple plugins for true/false toggler, key binding ',ta'
 
   -- Colorschemes
   -- use "lunarvim/colorschemes" -- A bunch of colorschemes you can try out
@@ -110,9 +112,7 @@ return packer.startup(function(use)
     "iamcco/markdown-preview.nvim",
     run = function() vim.fn["mkdp#util#install"]() end,
   })
-  use 'akinsho/nvim-bufferline.lua'
 
-  use 'rmagatti/alternate-toggler'
   use 'wellle/targets.vim'
   use 'mg979/vim-visual-multi'
 

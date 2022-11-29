@@ -94,7 +94,7 @@ return packer.startup(function(use)
   -- Treesitter
   use {
     "nvim-treesitter/nvim-treesitter",
-    run = ":TSUpdate",
+    run = function() require('nvim-treesitter.install').update({ with_sync = true }) end,
   }
   use "p00f/nvim-ts-rainbow"
   use 'JoosepAlviste/nvim-ts-context-commentstring'
@@ -103,7 +103,7 @@ return packer.startup(function(use)
   -- Git
   use 'lewis6991/gitsigns.nvim'
   -- use 'dinhhuy258/git.nvim' -- For git blame & browser
-  use { "TimUntersberger/neogit", requires = 'nvim-lua/plenary.nvim'}
+  use { "TimUntersberger/neogit", requires = 'nvim-lua/plenary.nvim' }
 
   -- use 'MunifTanjim/prettier.nvim' -- Prettier plugin for Neovim's build-in LSP client_source_map
   use 'norcalli/nvim-colorizer.lua'

@@ -55,6 +55,7 @@ return packer.startup(function(use)
   use 'akinsho/nvim-bufferline.lua'
   use 'rmagatti/alternate-toggler' -- A simple plugins for true/false toggler, key binding ',ta'
   use "akinsho/toggleterm.nvim" -- terminal plugins
+  use 'lewis6991/impatient.nvim' -- Speed up loading lua modules in Neovim to improve startup time
 
   -- Colorschemes
   -- use "lunarvim/colorschemes" -- A bunch of colorschemes you can try out
@@ -91,6 +92,7 @@ return packer.startup(function(use)
   -- Telescope
   use 'nvim-telescope/telescope.nvim'
   use 'nvim-telescope/telescope-file-browser.nvim'
+  use "ahmedkhalf/project.nvim" -- for projects
 
   -- Treesitter
   use {

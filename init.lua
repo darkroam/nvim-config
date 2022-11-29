@@ -2,6 +2,7 @@ require('darkroam.options')
 require('darkroam.keymaps')
 require('darkroam.plugins')
 require('darkroam.colorscheme')
+require('darkroam.impatient')
 
 local has = vim.fn.has
 local is_mac = has "macunix"

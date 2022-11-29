@@ -54,6 +54,7 @@ return packer.startup(function(use)
   use 'terryma/vim-expand-region' -- A simple plugins for expand region, key binding '+'/'-'
   use 'akinsho/nvim-bufferline.lua'
   use 'rmagatti/alternate-toggler' -- A simple plugins for true/false toggler, key binding ',ta'
+  use "akinsho/toggleterm.nvim" -- terminal plugins
 
   -- Colorschemes
   -- use "lunarvim/colorschemes" -- A bunch of colorschemes you can try out

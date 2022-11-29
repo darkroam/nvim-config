@@ -64,7 +64,7 @@ return packer.startup(function(use)
     'svrana/neosolarized.nvim',
     requires = { 'tjdevries/colorbuddy.nvim' }
   }
-  use 'hoob3rt/lualine.nvim' -- Statusline
+  use 'nvim-lualine/lualine.nvim' -- Statusline
 
   -- cmp plugins
   use "hrsh7th/nvim-cmp" -- The completion plugin

@@ -19,14 +19,13 @@ local diagnostics = null_ls.builtins.diagnostics
 
 null_ls.setup {
   sources = {
-    formatting.prettierd,
+    -- formatting.prettierd,
+    formatting.prettier.with { extra_args = { "--no-semi", "--single-quote", "--jsx-single-quote" } },
     formatting.black.with { extra_args = { "--fast" } },
     -- formatting.yapf,
     formatting.stylua,
     diagnostics.flake8,
-    diagnostics.eslint_d.with({
-      diagnostics_format = '[eslint] #{m}\n(#{c})'
-    }),
+    diagnostics.eslint_d.with({ diagnostics_format = '[eslint] #{m}\n(#{c})' }),
     diagnostics.fish,
   },
   on_attach = function(client, bufnr)

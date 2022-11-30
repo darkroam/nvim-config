@@ -47,7 +47,9 @@ return packer.startup(function(use)
 	use("nvim-lua/popup.nvim") -- An implementation of the Popup API from vim in Neovim
 	use("nvim-lua/plenary.nvim") -- Useful lua functions used ny lots of plugins -- Common utilities
 	use("windwp/nvim-autopairs") -- Autopairs, integrates with both cmp and treesitter
+	use("wellle/targets.vim") -- improve vim text objects function
 	use("windwp/nvim-ts-autotag")
+	use("mg979/vim-visual-multi") -- a powerful plugin for multi visual editor
 	use("numToStr/Comment.nvim") -- Easily comment stuff
 	use("nvim-tree/nvim-web-devicons") -- File icons
 	use("nvim-tree/nvim-tree.lua") -- File icons
@@ -55,6 +57,7 @@ return packer.startup(function(use)
 	use("akinsho/nvim-bufferline.lua")
 	use("rmagatti/alternate-toggler") -- A simple plugins for true/false toggler, key binding ',ta'
 	use("akinsho/toggleterm.nvim") -- terminal plugins
+	use("folke/zen-mode.nvim") -- full-screen plugins
 	use("lewis6991/impatient.nvim") -- Speed up loading lua modules in Neovim to improve startup time
 
 	-- Colorschemes
@@ -67,6 +70,7 @@ return packer.startup(function(use)
 		requires = { "tjdevries/colorbuddy.nvim" },
 	})
 	use("nvim-lualine/lualine.nvim") -- Statusline
+	use("norcalli/nvim-colorizer.lua") -- Color Highlighter plugins
 
 	-- cmp plugins
 	use("hrsh7th/nvim-cmp") -- The completion plugin
@@ -89,6 +93,7 @@ return packer.startup(function(use)
 	use("jose-elias-alvarez/null-ls.nvim") -- Use Neovim as a language server to inject LSP diagnostics, code actions, and more via Lua.
 	use("glepnir/lspsaga.nvim") -- LSP UIs
 	use("RRethy/vim-illuminate")
+	-- use("MunifTanjim/prettier.nvim") -- Prettier plugin for Neovim's build-in LSP client_source_map
 
 	-- Telescope
 	use("nvim-telescope/telescope.nvim")
@@ -111,22 +116,15 @@ return packer.startup(function(use)
 	-- use("dinhhuy258/git.nvim") -- For git blame & browser
 	use({ "TimUntersberger/neogit", requires = "nvim-lua/plenary.nvim" })
 
-	-- Personal Wiki
+	-- Text Format , org, markdown, etc.
 	use("nvim-orgmode/orgmode")
 	use("akinsho/org-bullets.nvim")
-
-	-- use("MunifTanjim/prettier.nvim") -- Prettier plugin for Neovim's build-in LSP client_source_map
-	use("norcalli/nvim-colorizer.lua")
-	use("folke/zen-mode.nvim")
 	use({
 		"iamcco/markdown-preview.nvim",
 		run = function()
 			vim.fn["mkdp#util#install"]()
 		end,
 	})
-
-	use("wellle/targets.vim")
-	use("mg979/vim-visual-multi")
 
 	-- Automatically set up your configuration after cloning packer.nvim
 	-- Put this at the end after all plugins

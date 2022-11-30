@@ -59,6 +59,7 @@ return packer.startup(function(use)
 	use("akinsho/toggleterm.nvim") -- terminal plugins
 	use("folke/zen-mode.nvim") -- full-screen plugins
 	use("lewis6991/impatient.nvim") -- Speed up loading lua modules in Neovim to improve startup time
+	use("kylechui/nvim-surround") -- Surround selections
 
 	-- Colorschemes
 	-- use("lunarvim/colorschemes") -- A bunch of colorschemes you can try out
@@ -109,6 +110,7 @@ return packer.startup(function(use)
 	})
 	use("p00f/nvim-ts-rainbow")
 	use("JoosepAlviste/nvim-ts-context-commentstring")
+	use("nvim-treesitter/nvim-treesitter-textobjects")
 	-- use("nvim-treesitter/playground")
 
 	-- Git

@@ -28,7 +28,7 @@ keymap("n", "<leader>cd", ":cd %:p:h<CR>", term_opts)
 -- remove trailing spaces
 -- keymap('n', '<leader>tr', ':%s/ \+$//g<CR>', { silent = false })
 -- suspend neovim
-keymap("n", "<leader>xc", ":suspend<CR>", term_opts)
+-- keymap("n", "<leader>xc", ":suspend<CR>", term_opts)
 -- Plug("vim-expand-region")
 -- keymap('n', '<leader>xx', ':suspend<CR>', term_opts)
 -- map <leader>xx <Plug>(expand_region_expand)
@@ -83,7 +83,7 @@ keymap("i", "kj", "<ESC>", opts)
 -- keymap("i", "C-e", "<ESC>A", opts)
 -- keymap("i", "C-a", "<ESC>I", opts)
 
-keymap("n", "<leader>xc", "<Cmd>q<CR>", opts)
+keymap("n", "<leader>xc", "<Cmd>qa<CR>", opts)
 keymap("n", "<leader>xs", "<Cmd>w<CR>", opts)
 keymap("n", "<leader>xm", ":", { silent = false })
 

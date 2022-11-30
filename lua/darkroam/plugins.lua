@@ -53,7 +53,7 @@ return packer.startup(function(use)
 	use("numToStr/Comment.nvim") -- Easily comment stuff
 	use("nvim-tree/nvim-web-devicons") -- File icons
 	use("nvim-tree/nvim-tree.lua") -- File icons
-	use("terryma/vim-expand-region") -- A simple plugins for expand region, key binding '+'/'-'
+	-- use("terryma/vim-expand-region") -- A simple plugins for expand region, key binding '+'/'-'
 	use("akinsho/nvim-bufferline.lua")
 	use("rmagatti/alternate-toggler") -- A simple plugins for true/false toggler, key binding ',ta'
 	use("akinsho/toggleterm.nvim") -- terminal plugins

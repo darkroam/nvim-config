@@ -103,8 +103,8 @@ keymap("n", "<C-d>", 'vb"_d', opts)
 -- keymap('n', '<C-a>', 'gg<S-v>G', opts)
 
 -- Increment/Decrement for Number
--- keymap("n", "+", "<C-a>", opts)
--- keymap("n", "-", "<C-x>", opts)
+keymap("n", "+", "<C-a>", opts)
+keymap("n", "-", "<C-x>", opts)
 
 -- Visual --
 -- Stay in indent mode

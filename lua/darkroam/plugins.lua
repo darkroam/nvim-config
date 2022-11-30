@@ -111,6 +111,10 @@ return packer.startup(function(use)
 	-- use("dinhhuy258/git.nvim") -- For git blame & browser
 	use({ "TimUntersberger/neogit", requires = "nvim-lua/plenary.nvim" })
 
+	-- Personal Wiki
+	use("nvim-orgmode/orgmode")
+	use("akinsho/org-bullets.nvim")
+
 	-- use("MunifTanjim/prettier.nvim") -- Prettier plugin for Neovim's build-in LSP client_source_map
 	use("norcalli/nvim-colorizer.lua")
 	use("folke/zen-mode.nvim")

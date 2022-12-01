@@ -83,7 +83,7 @@ keymap("i", "kj", "<ESC>", opts)
 -- keymap("i", "C-e", "<ESC>A", opts)
 -- keymap("i", "C-a", "<ESC>I", opts)
 
-keymap("n", "<leader>xc", "<Cmd>qa<CR>", opts)
+-- keymap("n", "<C-x><C-c>", "<Cmd>qa<CR>", opts)
 keymap("n", "<leader>xs", "<Cmd>w<CR>", opts)
 keymap("n", "<leader>xm", ":", { silent = false })
 
@@ -139,6 +139,15 @@ keymap("t", "<C-l>", "<C-\\><C-N><C-w>l", term_opts)
 keymap("n", "<leader>gg", "<Cmd>Neogit<CR>", { desc = "Open Neogit" })
 
 -- MarkDown File
+keymap("n", "<leader>tf", ':lua require("tablemd").format()<CR>', opts)
+keymap("n", "<leader>tl", ':lua require("tablemd").insertColumn(false)<CR>', opts)
+keymap("n", "<leader>th", ':lua require("tablemd").insertColumn(true)<CR>', opts)
+keymap("n", "<leader>td", ':lua require("tablemd").deleteColumn()<CR>', opts)
+keymap("n", "<leader>tk", ':lua require("tablemd").insertRow(false)<CR>', opts)
+keymap("n", "<leader>tj", ':lua require("tablemd").insertRow(true)<CR>', opts)
+keymap("n", "<leader>tq", ':lua require("tablemd").alignColumn("left")<CR>', opts)
+keymap("n", "<leader>tw", ':lua require("tablemd").alignColumn("center")<CR>', opts)
+keymap("n", "<leader>te", ':lua require("tablemd").alignColumn("right")<CR>', opts)
 -- "autocmd Filetype markdown map <leader>w yiWi[<esc>Ea](<esc>pa)
 -- autocmd Filetype markdown inoremap <buffer> ,f <Esc>/<++><CR>:nohlsearch<CR>"_c4l
 -- autocmd Filetype markdown inoremap <buffer> ,w <Esc>/ <++><CR>:nohlsearch<CR>"_c5l<CR>

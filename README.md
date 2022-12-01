@@ -12,12 +12,14 @@
 4. `npm install -g pyright`
 5. `npm install -g eslint_d`
 6. `npm install -g neovim`
-7. `pip install flake8`
-8. `pip install neovim`
-9. `go install golang.org/x/tools/gopls@latest`
-10. `go install -v github.com/segmentio/golines@latest`
-11. `go install -v mvdan.cc/gofumpt@latest`
-12. `golangci-lint`
+7. `npm install -g black`
+8. `pip install flake8`
+9. `pip install neovim`
+10. `go install golang.org/x/tools/gopls@latest`
+11. `go install github.com/segmentio/golines@latest`
+12. `go install mvdan.cc/gofumpt@latest`
+13. `go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest`
+14. `lua-language-server`
 
 ## [Info]
 

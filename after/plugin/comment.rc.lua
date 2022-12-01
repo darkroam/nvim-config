@@ -1,30 +1,32 @@
-local status, comment = pcall (require, 'Comment')
-if not status then return end
+local status, comment = pcall(require, "Comment")
+if not status then
+	return
+end
 
-comment.setup{
-  pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
-  toggler = {
-    ---Line-comment toggle keymap
-    line = ',ll', -- line = 'gcc'
-    ---Block-comment toggle keymap
-    -- block = 'gbc',
-  },
-  ---LHS of operator-pending mappings in NORMAL and VISUAL mode
-  opleader = {
-    ---Line-comment keymap
-    line = ',ll', -- line = 'gc'
-    ---Block-comment keymap
-    -- block = 'gb',
-  },
-  extra = {
-    ---Add comment on the line above
-    above = ',lO', -- above = 'gcO',
-    ---Add comment on the line below
-    -- below = 'gco',
-    -- Add comment at the end of line
-    eol = ',lA', -- eol = 'gcA'
-  },
-}
+comment.setup({
+	pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
+	toggler = {
+		---Line-comment toggle keymap
+		line = ",ll", -- line = 'gcc'
+		---Block-comment toggle keymap
+		-- block = 'gbc',
+	},
+	---LHS of operator-pending mappings in NORMAL and VISUAL mode
+	opleader = {
+		---Line-comment keymap
+		line = ",ll", -- line = 'gc'
+		---Block-comment keymap
+		-- block = 'gb',
+	},
+	extra = {
+		---Add comment on the line above
+		above = ",lO", -- above = 'gcO',
+		---Add comment on the line below
+		-- below = 'gco',
+		-- Add comment at the end of line
+		eol = ",lA", -- eol = 'gcA'
+	},
+})
 
 -- NORMAL mode
 -- `gcc` - Toggles the current line using linewise comment

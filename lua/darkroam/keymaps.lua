@@ -156,3 +156,5 @@ keymap("n", "<leader>gg", "<Cmd>Neogit<CR>", { desc = "Open Neogit" })
 -- autocmd Filetype markdown inoremap <buffer> ,3 ###<Space><Enter><++><Esc>kA
 -- autocmd Filetype markdown inoremap <buffer> ,4 ####<Space><Enter><++><Esc>kA
 -- autocmd Filetype markdown inoremap <buffer> ,l --------<Enter>
+
+keymap("n", "<leader>md", "<Cmd>MarkdownPreviewToggle<CR>", term_opts)

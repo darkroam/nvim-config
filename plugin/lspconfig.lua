@@ -22,6 +22,7 @@ end
 local function lsp_keymaps(bufnr)
 	local opts = { noremap = true, silent = true }
 	local keymap = vim.api.nvim_buf_set_keymap
+	keymap(bufnr, "n", "gs", "<cmd>lua require('telescope.builtin').lsp_document_symbols()<CR>", opts)
 	keymap(bufnr, "n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", opts)
 	-- keymap(bufnr, "n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
 	-- keymap(bufnr, "n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", opts)
@@ -93,16 +94,21 @@ capabilities.textDocument.completion.completionItem.snippetSupport = true
 capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 -- local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-nvim_lsp.flow.setup({
-	on_attach = on_attach,
-	capabilities = capabilities,
-})
+-- Setup Common language server
+local servers = { "bashls", "sqls", "dockerls", "flow", "sourcekit" }
+
+for _, lsp in ipairs(servers) do
+	nvim_lsp[lsp].setup({
+		on_attach = on_attach,
+		capabilities = capabilities,
+	})
+end
 
 nvim_lsp.tsserver.setup({
 	on_attach = on_attach,
+	capabilities = capabilities,
 	filetypes = { "typescript", "typescriptreact", "typescript.tsx" },
 	cmd = { "typescript-language-server", "--stdio" },
-	capabilities = capabilities,
 })
 
 nvim_lsp.pyright.setup({
@@ -112,17 +118,12 @@ nvim_lsp.pyright.setup({
 	cmd = { "pyright-langserver", "--stdio" },
 })
 
-nvim_lsp.sourcekit.setup({
-	on_attach = on_attach,
-	capabilities = capabilities,
-})
-
 nvim_lsp.sumneko_lua.setup({
-	capabilities = capabilities,
 	on_attach = function(client, bufnr)
 		on_attach(client, bufnr)
 		enable_format_on_save(client, bufnr)
 	end,
+	capabilities = capabilities,
 	settings = {
 		Lua = {
 			diagnostics = {
@@ -139,6 +140,20 @@ nvim_lsp.sumneko_lua.setup({
 	},
 })
 
+nvim_lsp.gopls.setup({
+	on_attach = on_attach,
+	capabilities = capabilities,
+	root_dir = nvim_lsp.util.root_pattern(".git", "go.mod"),
+	init_options = {
+		usePlaceholders = true,
+		completeUnimported = true,
+	},
+	settings = {
+		gopls = {
+			gofumpt = true,
+		},
+	},
+})
 -- Diagnostic symbols in the sign column (gutter)
 local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
 for type, icon in pairs(signs) do

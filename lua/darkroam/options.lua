@@ -8,7 +8,7 @@ vim.opt.shortmess:append("c")
 vim.opt.formatoptions:append({ "r" })
 
 local options = {
-	title = true,
+	-- title = true,
 	backup = false, -- creates a backup file
 	backupskip = { "/tmp/*", "/private/tmp/*" },
 	backspace = { "start", "eol", "indent" },

@@ -46,10 +46,10 @@ ts.setup({
 		-- termcolors = {} -- table of colour name strings
 	},
 	-- for plugin("nvim-ts-context-commentstring")
-	context_commentstring = {
-		enable = true,
-		enable_autocmd = false,
-	},
+	-- context_commentstring = {
+	-- 	enable = true,
+	-- 	enable_autocmd = false,
+	-- },
 	-- for plugin("playground")
 	-- playground = {
 	--   enable = true,

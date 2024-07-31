@@ -3,7 +3,7 @@ if not status then
 	return
 end
 
-saga.init_lsp_saga()
+-- saga.init_lsp_saga()
 -- saga.init_lsp_saga({
 -- 	server_filetype_map = {
 -- 		typescript = "typescript",
@@ -11,6 +11,8 @@ saga.init_lsp_saga()
 -- 		lua = "lua",
 -- 	},
 -- })
+
+saga.setup()
 
 local opts = { noremap = true, silent = true }
 vim.keymap.set("n", "K", "<Cmd>Lspsaga hover_doc<CR>", opts)

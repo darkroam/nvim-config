@@ -3,8 +3,6 @@ if not status then
 	return
 end
 
-orgmode.setup_ts_grammar()
-
 orgmode.setup({
 	orgmode_agenda_files = { "~/documents/org/*" },
 	org_default_notes_file = "~/documents/org/refile.org",

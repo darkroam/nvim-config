@@ -48,7 +48,7 @@ local on_attach = function(client, bufnr)
 		client.server_capabilities.documentFormattingProvider = false
 	end
 
-	if client.name == "sumneko_lua" then
+	if client.name == "lua_ls" then
 		client.server_capabilities.documentFormattingProvider = false
 	end
 
@@ -95,7 +95,7 @@ capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 -- local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 -- Setup Common language server
-local servers = { "bashls", "sqls", "dockerls", "flow", "sourcekit" }
+local servers = { "bashls", "sqlls", "dockerls", "flow", "sourcekit" }
 
 for _, lsp in ipairs(servers) do
 	nvim_lsp[lsp].setup({
@@ -118,7 +118,7 @@ nvim_lsp.pyright.setup({
 	cmd = { "pyright-langserver", "--stdio" },
 })
 
-nvim_lsp.sumneko_lua.setup({
+nvim_lsp.lua_ls.setup({
 	on_attach = function(client, bufnr)
 		on_attach(client, bufnr)
 		enable_format_on_save(client, bufnr)

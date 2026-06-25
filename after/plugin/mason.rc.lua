@@ -1,4 +1,5 @@
 ﻿local ok_mason, mason = pcall(require, "mason")
+local languages = require("darkroam.languages")
 if not ok_mason then
 	return
 end
@@ -10,7 +11,18 @@ end
 
 mason.setup({})
 
+local ensure_installed = {}
+if languages.syntax.lua then
+	table.insert(ensure_installed, "lua_ls")
+end
+if languages.syntax.c then
+	table.insert(ensure_installed, "clangd")
+end
+if languages.syntax.go then
+	table.insert(ensure_installed, "gopls")
+end
+
 mason_lspconfig.setup({
-	ensure_installed = { "lua_ls", "gopls" },
+	ensure_installed = ensure_installed,
 	automatic_installation = false,
 })

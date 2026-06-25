@@ -1,4 +1,5 @@
 ﻿local ok_cmp_lsp, cmp_lsp = pcall(require, "cmp_nvim_lsp")
+local languages = require("darkroam.languages")
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 if ok_cmp_lsp then
 	capabilities = cmp_lsp.default_capabilities(capabilities)
@@ -62,6 +63,7 @@ local servers = {
 			},
 		},
 	},
+	clangd = {},
 	gopls = {
 		root_dir = function(bufnr, on_dir)
 			local root = vim.fs.root(bufnr, { "go.work", "go.mod", ".git" })
@@ -79,12 +81,21 @@ local servers = {
 	},
 }
 
+local enabled_servers = {}
+if languages.syntax.lua then
+	table.insert(enabled_servers, "lua_ls")
+end
+if languages.syntax.c then
+	table.insert(enabled_servers, "clangd")
+end
+if languages.syntax.go then
+	table.insert(enabled_servers, "gopls")
+end
+
 for name, config in pairs(servers) do
 	config.capabilities = capabilities
 	config.on_attach = on_attach
 	vim.lsp.config(name, config)
 end
 
-vim.lsp.enable({ "lua_ls", "gopls" })
-
-
+vim.lsp.enable(enabled_servers)

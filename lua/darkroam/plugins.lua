@@ -66,6 +66,7 @@ return packer.startup(function(use)
 	use("neovim/nvim-lspconfig")
 	use("williamboman/mason.nvim")
 	use("williamboman/mason-lspconfig.nvim")
+	use("stevearc/conform.nvim")
 	use("RRethy/vim-illuminate")
 
 	-- Telescope

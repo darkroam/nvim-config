@@ -1,8 +1,1 @@
-local status, colorizer = pcall(require, "colorizer")
-if not status then
-	return
-end
-
-colorizer.setup({
-	"*",
-})
+﻿-- Disabled: norcalli/nvim-colorizer.lua uses deprecated APIs on current Neovim.

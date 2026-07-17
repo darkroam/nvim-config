@@ -3,6 +3,16 @@
 本文件只记录已经完成并验证的项目。活动和挂起工作分别见 [`todo.md`](todo.md) 与
 [`suspended.md`](suspended.md)。
 
+## 2026-07-17：Neovim shell 迁移至 Zsh
+
+- [x] 确认 `/usr/bin/zsh` 5.9 可用、Fish 不存在，并经方案确认后先更新架构、依赖和用户文档。
+- [x] 将 `lua/darkroam/options.lua` 的固定 shell 从 `fish` 改为 `zsh`；ToggleTerm 继续通过
+  `vim.o.shell` 继承，无需建立第二个 shell 决策点。
+- [x] 隔离环境加载 options 后确认 `shell=zsh`、命令可执行，并通过该 shell 得到 `zsh-ok`；39 个
+  Lua 文件解析和文档一致性检查通过。
+- [x] 完整配置启动输出确认 `configured shell: zsh`，且没有 Fish 相关错误；既有 Neovim 0.10/0.11
+  兼容错误保持不变，继续由活动 TODO 跟踪。
+
 ## 2026-07-17：文档与治理基线
 
 - [x] 全量盘点 41 个原 tracked 文件、39 个 Lua 文件、启动顺序、语言开关、Packer 声明、插件 hook、

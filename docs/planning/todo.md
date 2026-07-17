@@ -19,8 +19,6 @@
   不存在的命令。
 - [ ] 审查 `cmp-cmdline`、`cmp-nvim-lua`、`popup.nvim` 和 Lualine `fugitive` extension，确认是启用、
   删除还是作为明确依赖保留。
-- [ ] 决定 `fish` 是正式核心依赖还是应改为可移植 shell；当前机器缺少 `fish`，修改前必须确认用户
-  的终端工作流偏好。
 - [ ] 补齐 C 格式化 provider 或调整 Conform fallback 设计；区分 Mason `clangd` 和独立
   `clang-format`。
 

@@ -16,7 +16,7 @@
 | --- | --- | --- |
 | Neovim 0.11+ | 核心 | `plugin/lspconfig.lua` 直接使用 `vim.lsp.config()` 和 `vim.lsp.enable()`；当前上游 Telescope 与 Mason-LSPConfig 也要求 0.11 |
 | Git | 核心 | Packer bootstrap、插件同步和版本库功能 |
-| `fish` | 核心 | `vim.opt.shell` 的固定值，也是 ToggleTerm 和 `:!` 命令的 shell；缺失时 shell 功能失败 |
+| `zsh` | 核心 | `vim.opt.shell` 的固定值，也是 ToggleTerm 和 `:!` 命令的 shell；缺失时 shell 功能失败 |
 | 网络与 TLS 证书 | 功能必需 | 首次 Git bootstrap、Packer 同步、Mason 和 Tree-sitter 下载；稳定离线编辑不应持续依赖网络 |
 | UTF-8 locale 和真彩终端 | 功能必需 | 当前图标、诊断符号和 `termguicolors` 界面 |
 

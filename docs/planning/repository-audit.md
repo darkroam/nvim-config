@@ -5,6 +5,9 @@
 - 初始状态：工作树干净
 - 范围：全部 tracked 配置、Git 历史摘要、参考文档结构、当前 Neovim 与本机可见依赖
 
+> 时间点说明：本记录中的 `fish` 状态是审计基线事实。审计后已按确认方案把当前 Neovim shell
+> 迁移为 `zsh`；当前要求以 [`../project/dependencies.md`](../project/dependencies.md) 为准。
+
 ## 目的与限制
 
 本记录建立文档架构前的事实基线，用于区分仓库声明、实际代码路径和当前机器状态。审计只做读取和

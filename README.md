@@ -34,7 +34,7 @@ plugins. Restart Neovim after bootstrap and run `:PackerSync` if synchronization
 did not finish. Mason and Tree-sitter may then install resources selected by
 the language switches, so initial setup requires network access.
 
-The core runtime requires Git and `fish`; editor integrations additionally use
+The core runtime requires Git and `zsh`; editor integrations additionally use
 tools such as a clipboard provider, `rg`, `fd`/`fdfind`, a C toolchain, and a
 Nerd Font according to the enabled features. The authoritative requirement
 levels and providers are in [dependencies](docs/project/dependencies.md).

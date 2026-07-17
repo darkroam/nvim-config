@@ -1,1 +1,0 @@
-﻿-- nvim-ts-autotag is disabled because this setup only enables Lua and Go parsers.

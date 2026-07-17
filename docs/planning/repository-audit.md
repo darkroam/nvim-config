@@ -129,6 +129,30 @@ LSP/Mason/Conform、Telescope/project、Tree-sitter 和 Gitsigns 均有直接声
 
 这些问题均进入 [`todo.md`](todo.md)，没有在文档架构变更中顺带修改。
 
+## 0.12.3 补充验证与迁移决策
+
+2026-07-17 使用 `~/Downloads/nvim-linux-x86_64/bin/nvim` 确认 `NVIM v0.12.3`。这是时间点证据，配置
+和文档不得硬编码该本机路径。以 `/tmp` 为工作目录加载迁移前配置后观察到：
+
+- 0.10 下的 nvim-lspconfig、Telescope 和 Mason-LSPConfig 最低版本错误消失；
+- Packer、NvimTree、Bufferline、ToggleTerm、ZenMode、Mason、Conform、Telescope、TSInstall、TSUpdate
+  和 Gitsigns 命令可见；
+- Neovim 0.12 使用内置 `:lsp` 与 `:checkhealth vim.lsp`，当前 nvim-lspconfig 不再提供 `:LspInfo`；
+- 当前 nvim-treesitter checkout 是要求 0.12 的 `main` 不兼容重写版，旧 `nvim-treesitter.configs` 不存在；
+  原 fallback 没有初始化新版 Textobjects，`af`/`if` 映射不存在；
+- 当前 Telescope README 要求 Neovim 0.11.7+，nvim-lspconfig README 要求 0.11.3+，
+  Mason-LSPConfig 文档要求 0.11.0+，nvim-treesitter `main` 要求 0.12.0+；
+- Mason-LSPConfig 默认 `automatic_enable=true`，迁移前无效的 `automatic_installation=false` 没有关闭它，
+  因而 Mason 中的 StyLua 被意外作为 LSP 启动；
+- LuaLS 测试进程退出是因为受限诊断环境不允许在 Mason package 的 `libexec/log/cache` 创建目录，日志
+  明确报告 `Read-only file system`，不能把该沙箱结果误记为正常用户会话的 LuaLS 配置故障；
+- StyLua 实际 Lua 格式化通过，系统和 Mason PATH 中仍没有 `clang-format`。
+
+用户随后确认以 0.12.3 为完整路径、0.10/0.11 为条件降级路径，并确认 Packer 迁移到 lazy.nvim。
+Packer upstream 已停止维护；Lazy 提供 lockfile、`cond`、`keys`、`cmd`、`event` 和 spec import，适合在
+一个配置中阻止旧版加载不兼容插件。0.12 的原生 `vim.pack` 没有用于本仓库，因为 0.10/0.11 不存在
+同一 API；单 lockfile 也不尝试为 Tree-sitter 在不同 Neovim 上切换 `main`/`master`。
+
 ## 审计结论
 
 仓库的核心责任边界清楚，但运行基线、插件可复现性、遗留 provider 和用户说明此前没有统一来源。

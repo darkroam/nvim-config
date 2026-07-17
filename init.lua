@@ -1,8 +1,10 @@
+if vim.loader then
+	vim.loader.enable()
+end
+
 require("darkroam.options")
 require("darkroam.keymaps")
-require("darkroam.plugins")
-require("darkroam.colorscheme")
-require("darkroam.impatient")
+require("darkroam.lazy")
 
 local has = vim.fn.has
 local is_mac = has("macunix")

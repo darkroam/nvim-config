@@ -1,2 +1,0 @@
-﻿-- Orgmode is intentionally disabled: its current setup tries to compile an org
--- tree-sitter parser on startup. This config is focused on Lua and Go only.

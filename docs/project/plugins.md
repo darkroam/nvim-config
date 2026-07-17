@@ -1,101 +1,145 @@
 # 插件清单与状态
 
-本文是插件声明、配置入口和生效状态的权威来源。直接声明只允许出现在
-`lua/darkroam/plugins.lua`；本文件记录声明与源码钩子的关系，但不代替 Packer 配置。
+本文是插件声明、配置入口、版本门槛和生效状态的权威来源。直接插件 spec 只允许出现在
+`lua/darkroam/plugins/*.lua`；lazy.nvim 自身由 `lua/darkroam/lazy.lua` 固定 commit 后 bootstrap。
+全部受管插件 commit 记录在 `lazy-lock.json`。
 
 状态含义：
 
-- **活动**：已声明并有当前运行路径。
-- **声明**：已声明，主要使用上游默认行为或作为依赖，没有独立本地配置。
-- **部分使用**：已声明，但仓库只消费其部分能力。
-- **禁用**：配置文件明确不加载对应插件。
-- **遗留未声明**：保留配置或按键，但 `plugins.lua` 没有提供者，当前不能作为可用功能。
+- **活动**：在满足版本门槛时有当前运行路径；
+- **依赖**：由其他 spec 显式引用，不单独声明用户能力；
+- **默认行为**：加载插件并使用上游默认映射或功能；
+- **条件禁用**：当前锁定版本在较旧 Neovim 上不进入 runtimepath；
+- **已移除**：本轮确认不再声明、配置或建立相关按键。
 
-## 管理器与基础库
+## 管理器与共享依赖
 
-| 插件 | 状态 | 本地入口与职责 |
+| 插件 | 状态与门槛 | 本地入口与职责 |
 | --- | --- | --- |
-| `wbthomason/packer.nvim` | 活动 | `lua/darkroam/plugins.lua` 自举并声明插件；当前无 pin/lock |
-| `nvim-lua/plenary.nvim` | 声明 | Telescope、project.nvim 等插件的共享 Lua 工具库 |
-| `nvim-lua/popup.nvim` | 声明 | 历史基础依赖；当前源码没有直接 `require` |
+| `folke/lazy.nvim` | 活动；Neovim 0.10+ | `lua/darkroam/lazy.lua` 固定 manager commit、bootstrap、读取 `lazy-lock.json` 并 import specs |
+| `nvim-lua/plenary.nvim` | 依赖；随 Telescope 档位 | `lua/darkroam/plugins/telescope.lua`，供 Telescope 使用 |
 
-## 编辑与界面
+不同时保留 Packer 声明。迁移前的 Packer start package 是机器状态，必须备份移出活动 packpath，而不是
+作为 Lazy dependency 使用。
 
-| 插件 | 状态 | 配置文件或行为 |
+## 编辑基础
+
+由 `lua/darkroam/plugins/editor.lua` 负责：
+
+| 插件 | 状态与门槛 | 配置和用户行为 |
 | --- | --- | --- |
-| `windwp/nvim-autopairs` | 活动 | `after/plugin/autopairs.rc.lua`，含 cmp confirm 集成和 `<M-e>` fast-wrap |
-| `wellle/targets.vim` | 声明 | 使用上游 text-object 默认行为 |
-| `mg979/vim-visual-multi` | 声明 | 使用上游多光标默认行为 |
-| `numToStr/Comment.nvim` | 活动 | `after/plugin/comment.rc.lua`，自定义 `,ll`、`,lO`、`,lA` |
-| `kylechui/nvim-surround` | 活动 | `after/plugin/surround.rc.lua`，使用 `ys`、`ds`、`cs` 默认映射 |
-| `rmagatti/alternate-toggler` | 活动 | `lua/darkroam/keymaps.lua` 提供 `,ta` |
-| `nvim-tree/nvim-web-devicons` | 活动 | `after/plugin/web-devicons.rc.lua` |
-| `nvim-tree/nvim-tree.lua` | 活动 | `after/plugin/nvim-tree.rc.lua` 与全局 `,e` |
-| `akinsho/nvim-bufferline.lua` | 活动 | `after/plugin/bufferline.rc.lua`，tab 模式和 Tab/S-Tab 映射 |
-| `akinsho/toggleterm.nvim` | 活动 | `after/plugin/toggleterm.rc.lua`，浮动终端与可选命令 toggle 函数 |
-| `folke/zen-mode.nvim` | 活动 | `after/plugin/zen-mode.rc.lua`，`,ff` |
-| `lewis6991/impatient.nvim` | 活动 | `lua/darkroam/impatient.lua` 启用 profiling |
-| `svrana/neosolarized.nvim` | 活动 | `lua/darkroam/colorscheme.lua` 与 `after/plugin/neosolarized.rc.lua` |
-| `tjdevries/colorbuddy.nvim` | 活动依赖 | Neosolarized 声明的依赖，用于诊断 highlight |
-| `nvim-lualine/lualine.nvim` | 部分使用 | `after/plugin/lualine.rc.lua`；配置中的 Fugitive extension 没有已声明提供者 |
+| `windwp/nvim-autopairs` | 活动；0.10+ | `InsertEnter` 加载、cmp confirm 集成和 Alt-e fast-wrap |
+| `wellle/targets.vim` | 默认行为；0.10+ | 使用上游 text-object 映射 |
+| `mg979/vim-visual-multi` | 默认行为；0.10+ | 使用上游多光标映射 |
+| `numToStr/Comment.nvim` | 活动；0.10+ | `,ll` 当前行 toggle，`,l{motion}` operator，`,lO`/`,lA` extra |
+| `kylechui/nvim-surround` | 活动；0.10+ | `ys`、`ds`、`cs` 默认映射 |
+| `rmagatti/alternate-toggler` | 活动；0.10+ | `,ta`，映射随 plugin spec 加载 |
 
-## 补全、LSP 与格式化
+Comment.nvim 的 toggler 与 opleader 不再复用同一完整键串，避免 operator 映射被覆盖。
 
-| 插件 | 状态 | 配置文件或行为 |
+## 界面和终端
+
+由 `lua/darkroam/plugins/ui.lua` 负责：
+
+| 插件 | 状态与门槛 | 配置和用户行为 |
 | --- | --- | --- |
-| `hrsh7th/nvim-cmp` | 活动 | `after/plugin/cmp.rc.lua`，插入补全和 Tab/S-Tab 流程 |
-| `hrsh7th/cmp-buffer` | 活动 | cmp source `buffer` |
-| `hrsh7th/cmp-path` | 活动 | cmp source `path` |
-| `hrsh7th/cmp-cmdline` | 部分使用 | 已声明，但没有 `cmp.setup.cmdline()` |
-| `hrsh7th/cmp-nvim-lsp` | 活动 | cmp source `nvim_lsp` 和 LSP capability |
-| `hrsh7th/cmp-nvim-lua` | 部分使用 | 已声明，但活动 source 列表没有 `nvim_lua` |
-| `saadparwaiz1/cmp_luasnip` | 活动 | cmp source `luasnip` |
-| `L3MON4D3/LuaSnip` | 活动 | `after/plugin/cmp.rc.lua` 与 `after/plugin/luasnip.rc.lua` |
-| `rafamadriz/friendly-snippets` | 活动 | 由 VSCode snippet loader lazy-load |
-| `neovim/nvim-lspconfig` | 活动 | `plugin/lspconfig.lua`；当前代码要求 Neovim 0.11 API |
-| `williamboman/mason.nvim` | 活动 | `after/plugin/mason.rc.lua` |
-| `williamboman/mason-lspconfig.nvim` | 活动 | `after/plugin/mason.rc.lua` 生成 `ensure_installed` |
-| `stevearc/conform.nvim` | 活动 | `after/plugin/conform.rc.lua`，按语言开关保存时格式化 |
-| `RRethy/vim-illuminate` | 活动 | LSP attach 时调用 `illuminate.on_attach()` |
+| `nvim-tree/nvim-web-devicons` | 活动依赖；0.10+ | 图标默认启用，供文件树、状态栏等消费 |
+| `nvim-tree/nvim-tree.lua` | 活动；0.10+ | `,e` 和 `:NvimTree*` 按需加载 |
+| `akinsho/nvim-bufferline.lua` | 活动；0.10+ | tab 模式，Tab/Shift-Tab 切换 |
+| `akinsho/toggleterm.nvim` | 活动；0.10+ | `,xc` 浮动终端；命名 TermOpen augroup 和 `wincmd` terminal 映射 |
+| `folke/zen-mode.nvim` | 活动；0.10+ | `,ff` 按需加载 |
+| `svrana/neosolarized.nvim` | 活动；0.10+ | 启动主题、cursor/visual/diagnostic highlight |
+| `tjdevries/colorbuddy.nvim` | 依赖；0.10+ | Neosolarized 配置依赖 |
+| `nvim-lualine/lualine.nvim` | 活动；0.10+ | mode、branch、diff、诊断、文件、位置；不再请求缺失的 Fugitive extension |
 
-## 搜索、项目、语法和 Git
+ToggleTerm 仍继承 `vim.o.shell` 的 Zsh。Lazygit、Node、ncdu、htop、Python 自定义 terminal helper 暂时
+保留且没有仓库按键；它们只在 ToggleTerm 已加载后存在，外部命令边界见
+[`dependencies.md`](dependencies.md)。
 
-| 插件 | 状态 | 配置文件或行为 |
+## 补全与 snippet
+
+由 `lua/darkroam/plugins/completion.lua` 负责，均以 Neovim 0.10 为当前最低验证目标：
+
+| 插件 | 状态 | 配置和用户行为 |
 | --- | --- | --- |
-| `nvim-telescope/telescope.nvim` | 活动 | `after/plugin/telescope.rc.lua`，文件、grep、buffer、帮助、诊断和按键查询 |
-| `nvim-telescope/telescope-file-browser.nvim` | 活动 | 同一配置加载 `file_browser` extension |
-| `ahmedkhalf/project.nvim` | 活动 | `after/plugin/project.rc.lua`，pattern root 和 projects extension |
-| `nvim-treesitter/nvim-treesitter` | 活动 | `after/plugin/treesitter.rc.lua`，parser 集合由语言开关生成 |
-| `nvim-treesitter/nvim-treesitter-textobjects` | 活动 | Tree-sitter `af`/`if` function text object |
-| `lewis6991/gitsigns.nvim` | 活动 | `after/plugin/gitsigns.rc.lua`，sign 和 blame 配置 |
+| `hrsh7th/nvim-cmp` | 活动 | `InsertEnter` 加载，候选、确认和 Tab/S-Tab 流程 |
+| `hrsh7th/cmp-buffer` | 活动 source | buffer source |
+| `hrsh7th/cmp-path` | 活动 source | path source |
+| `hrsh7th/cmp-nvim-lsp` | 活动 source/依赖 | cmp source 与 LSP capabilities |
+| `saadparwaiz1/cmp_luasnip` | 活动 source | LuaSnip source |
+| `L3MON4D3/LuaSnip` | 活动 | 使用当前 `update_events` 配置，不使用 deprecated `history`；build `jsregexp` 支持 snippet transformation |
+| `rafamadriz/friendly-snippets` | 活动依赖 | VSCode snippet loader lazy-load |
 
-## 禁用与遗留配置
+## LSP、Mason 与格式化
 
-这些文件仍会被 Neovim 解析，但不代表对应功能可用：
+由 `lua/darkroam/plugins/lsp.lua` 负责：
 
-| 文件或按键来源 | 状态 | 原提供者或结论 |
+| 插件 | 状态与门槛 | 配置和用户行为 |
 | --- | --- | --- |
-| `after/plugin/colorizer.rc.lua` | 禁用 | `norcalli/nvim-colorizer.lua` 未声明；文件明确说明 deprecated API |
-| `after/plugin/orgmode.rc.lua` | 禁用 | `nvim-orgmode/orgmode` 未声明；文件明确避免启动时 parser 编译 |
-| `after/plugin/ts-autotag.rc.lua` | 禁用 | `windwp/nvim-ts-autotag` 未声明；注释中的语言范围已过时，后续需清理 |
-| `plugin/lspsaga.rc.lua` | 遗留未声明 | 历史提供者 `glepnir/lspsaga.nvim`；`pcall` 失败后不创建映射 |
-| `after/plugin/git.rc.lua` | 遗留未声明 | 历史候选 `dinhhuy258/git.nvim` 从未处于当前声明 |
-| `after/plugin/lsp-colors.rc.lua` | 遗留未声明 | 没有当前 provider |
-| `after/plugin/lspkind.rc.lua` | 遗留未声明 | 历史 provider `onsails/lspkind-nvim` 未声明 |
-| `after/plugin/neogit.rc.lua` | 遗留未声明 | 历史 provider `TimUntersberger/neogit` 未声明 |
-| `after/plugin/prettier.rc.lua` | 遗留未声明 | 历史 provider `MunifTanjim/prettier.nvim` 未声明；当前格式化由 Conform 负责 |
-| `after/plugin/tokyonight.rc.lua` | 遗留未声明 | `folke/tokyonight.nvim` 未声明；仅设置全局变量，不启用主题 |
-| `lua/darkroam/keymaps.lua` 的 `,gg` | 遗留未声明 | 调用不存在的 `:Neogit` |
-| `lua/darkroam/keymaps.lua` 的 `,tf` 等表格映射 | 遗留未声明 | 历史 provider `allen-mack/nvim-table-md` 未声明 |
-| `lua/darkroam/keymaps.lua` 的 `,md` | 遗留未声明 | 历史 provider `iamcco/markdown-preview.nvim` 未声明 |
-| `after/plugin/lualine.rc.lua` 的 `fugitive` extension | 遗留未声明 | `vim-fugitive` 未声明 |
+| `williamboman/mason.nvim` | 活动；0.10+ | `:Mason` UI 与 PATH；machine-local package manager |
+| `williamboman/mason-lspconfig.nvim` | 条件活动；0.11.3+ | `:LspInstall`/`:LspUninstall` 时按需加载，生成 `ensure_installed`，`automatic_enable=false` |
+| `neovim/nvim-lspconfig` | 条件活动；0.11.3+、启动加载 | server definitions、`vim.lsp.config/enable`、LspAttach 映射；不让首个文件错过 FileType attach |
+| `stevearc/conform.nvim` | 活动；0.10+ | 显式依赖 Mason 建立 formatter PATH；保存格式化和 `lsp_format="fallback"` |
+Mason package 存在不等于 LSP 自动启用。Document highlight 由 Neovim 原生 LSP autocommand 提供，不再
+依赖使用 0.12 deprecated API 的 Illuminate。StyLua 只作为 formatter；`lua_ls`、`clangd` 和可选 `gopls`
+由语言表选择。0.10 和 0.11.0–0.11.2 不加载当前 nvim-lspconfig 或相应 buffer-local 按键。
 
-上述项目必须经单独方案决定删除、恢复 provider 或增加缺失保护；文档建立本身不替用户作选择。
+## 搜索和文件浏览
 
-## 配置覆盖清单
+由 `lua/darkroam/plugins/telescope.lua` 负责，整组最低门槛为 Neovim 0.11.7：
 
-为了避免小型 hook 在重构时失去归属，以下 tracked plugin 配置都必须继续出现在本文：
+| 插件 | 状态 | 配置和用户行为 |
+| --- | --- | --- |
+| `nvim-telescope/telescope.nvim` | 条件活动 | 文件、grep、buffer、帮助、诊断和按键查询 |
+| `nvim-telescope/telescope-file-browser.nvim` | 条件活动依赖 | 当前 buffer 目录 file browser |
 
+整组被版本条件禁用时，`,rr`、`,dd`、`,bb`、`;t`、`;;`、`;e`、`,kk`、`,xf` 都不创建。
+
+## Tree-sitter 与 Textobjects
+
+由 `lua/darkroam/plugins/treesitter.lua` 负责，整组最低门槛为 Neovim 0.12.0：
+
+| 插件 | 状态 | 配置和用户行为 |
+| --- | --- | --- |
+| `nvim-treesitter/nvim-treesitter` | 条件活动；`main`、`lazy=false` | 新版 setup、内置高亮/缩进、版本专用 parser 目录、parser 命令与 `:TSUpdate` build hook |
+| `nvim-treesitter/nvim-treesitter-textobjects` | 条件活动；`main` | 新版独立 setup，显式 `af`/`if` function select 映射 |
+
+普通启动不自动安装 parser；新机器执行 `:DarkroamTSInstall`，由语言表生成 parser 列表，也可直接执行
+`:TSInstall lua c commonlisp`。0.11 及以下不加载当前插件和映射，也不自动切换到旧 `master` 分支。
+
+## Git
+
+| 插件 | 状态与门槛 | 本地入口与职责 |
+| --- | --- | --- |
+| `lewis6991/gitsigns.nvim` | 活动；0.10+ | `lua/darkroam/plugins/git.lua`，sign、staged sign 和可选 current-line blame |
+
+Neogit、git.nvim 和 Fugitive 不属于活动能力，也不再保留仓库配置或失效按键。
+
+## 本轮已移除
+
+| 插件或路径 | 结论 |
+| --- | --- |
+| `wbthomason/packer.nvim` | manager 已停止维护，以固定版本 lazy.nvim 和 lockfile 取代 |
+| `nvim-lua/popup.nvim` | 当前 Telescope 不再需要，仓库无直接消费 |
+| `lewis6991/impatient.nvim` | Neovim 0.10+ 使用内置 `vim.loader.enable()` |
+| `hrsh7th/cmp-cmdline` | 已声明但未配置 cmdline source，删除而非保留无效声明 |
+| `hrsh7th/cmp-nvim-lua` | 未进入活动 source，LuaLS 已提供 Lua workspace completion |
+| `RRethy/vim-illuminate` | 当前锁定版本在 0.12 调用 deprecated `client.supports_method`；以原生 LSP document highlight 取代 |
+| `ahmedkhalf/project.nvim` | 无仓库 projects 按键，且 history `uv.fs_event` 使 headless 退出挂起；删除后使用 `,cd` 显式切换目录 |
+| Lspsaga、git.nvim、lsp-colors、lspkind、Neogit、Prettier、Tokyonight | provider 未声明；删除遗留 runtime 配置 |
+| Colorizer、Orgmode、ts-autotag | 原文件已禁用且 provider 未声明；删除空壳配置 |
+| Markdown table、Markdown Preview、Neogit 全局按键 | provider 缺失；删除按键，不制造未知命令 |
+
+恢复任何已移除 provider 都是新的插件和用户行为变更，必须重新提案。
+
+迁移删除的旧源码路径如下；它们的活动职责已经分别进入上面的 Lazy spec，或按“本轮已移除”结论
+终止：
+
+- `lua/darkroam/plugins.lua`
+- `lua/darkroam/colorscheme.lua`
+- `lua/darkroam/impatient.lua`
+- `plugin/lspconfig.lua`
+- `plugin/lspsaga.rc.lua`
 - `after/plugin/autopairs.rc.lua`
 - `after/plugin/bufferline.rc.lua`
 - `after/plugin/cmp.rc.lua`
@@ -124,11 +168,18 @@
 - `after/plugin/web-devicons.rc.lua`
 - `after/plugin/zen-mode.rc.lua`
 
-## 维护规则
+## 配置覆盖与维护规则
 
-- 新增、删除或替换插件时，先更新本文件的状态和依赖边界，再改 `plugins.lua`。
-- 有配置文件但无声明的项目必须明确标为禁用或遗留，不能依靠本机旧插件缓存伪装为仓库能力。
-- 已声明但未消费的 source、extension 或基础库应定期审查；删除前仍需确认上游间接依赖。
-- 插件更新必须与 Neovim 最低版本和锁定策略一起验证，不能只以 `:PackerSync` 完成作为成功。
-- 插件相关用户行为同步更新 [`../user/usage-zh.md`](../user/usage-zh.md) 和
-  [`../user/keybindings-zh.md`](../user/keybindings-zh.md)。
+活动 spec 文件必须全部在本文件有归属：
+
+- `lua/darkroam/plugins/editor.lua`
+- `lua/darkroam/plugins/ui.lua`
+- `lua/darkroam/plugins/completion.lua`
+- `lua/darkroam/plugins/lsp.lua`
+- `lua/darkroam/plugins/telescope.lua`
+- `lua/darkroam/plugins/treesitter.lua`
+- `lua/darkroam/plugins/git.lua`
+
+新增、删除或替换插件时，先更新本文件和依赖/用户文档，再修改 spec。插件更新必须提交
+`lazy-lock.json` 的可审计 diff，并重新验证所有可取得的 Neovim 档位。不得依靠 data 目录中的旧插件
+缓存掩盖缺失声明、错误 dependency 或错误版本门槛。

@@ -1,5 +1,3 @@
-vim.cmd("autocmd!")
-
 -- vim.scriptencoding = "utf-8"
 vim.opt.path:append({ "**" }) -- Finding files - Search down into subfolders
 vim.opt.wildignore:append({ "*/node_modules/*" })
@@ -71,12 +69,16 @@ vim.cmd([[let &t_Cs = "\e[4:3m"]])
 vim.cmd([[let &t_Ce = "\e[4:0m"]])
 
 -- Turn off paste mode when leaving insert
+local options_group = vim.api.nvim_create_augroup("DarkroamOptions", { clear = true })
+
 vim.api.nvim_create_autocmd("InsertLeave", {
+	group = options_group,
 	pattern = "*",
 	command = "set nopaste",
 })
 
 vim.api.nvim_create_autocmd("TextYankPost", {
+	group = options_group,
 	callback = function()
 		vim.highlight.on_yank({
 			higroup = "IncSearch",

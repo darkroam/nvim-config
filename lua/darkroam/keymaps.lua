@@ -49,10 +49,6 @@ keymap("n", "sl", "<C-w>l", opts)
 -- keymap("n", "<C-k>", "<C-w>k", opts)
 -- keymap("n", "<C-l>", "<C-w>l", opts)
 
--- Nvimtree
-keymap("n", "<leader>e", ":NvimTreeToggle<cr>", opts)
--- keymap("n", "<leader>e", ":Lex 30<cr>", opts)
-
 -- Split windows
 keymap("n", "<leader>x1", "<C-w>o", term_opts)
 keymap("n", "<leader>x2", ":split<Return><C-w>w", term_opts)
@@ -89,9 +85,6 @@ keymap("n", "<leader>xm", ":", { silent = false })
 
 -- Do not yank with x
 keymap("n", "x", '"_x', opts)
-
--- Toggle true/false
-vim.keymap.set("n", "<leader>ta", "<Cmd>ToggleAlternate<CR>", opts)
 
 -- Save with root permission (not working for now)
 --vim.api.nvim_create_user_command('W', 'w !sudo tee > /dev/null %', {})
@@ -134,36 +127,3 @@ keymap("t", "<C-h>", "<C-\\><C-N><C-w>h", term_opts)
 keymap("t", "<C-j>", "<C-\\><C-N><C-w>j", term_opts)
 keymap("t", "<C-k>", "<C-\\><C-N><C-w>k", term_opts)
 keymap("t", "<C-l>", "<C-\\><C-N><C-w>l", term_opts)
-
--- Git Plugin "neogit"
-keymap("n", "<leader>gg", "<Cmd>Neogit<CR>", { desc = "Open Neogit" })
-
--- MarkDown File
-keymap("n", "<leader>tf", ':lua require("tablemd").format()<CR>', opts)
-keymap("n", "<leader>tl", ':lua require("tablemd").insertColumn(false)<CR>', opts)
-keymap("n", "<leader>th", ':lua require("tablemd").insertColumn(true)<CR>', opts)
-keymap("n", "<leader>td", ':lua require("tablemd").deleteColumn()<CR>', opts)
-keymap("n", "<leader>tj", ':lua require("tablemd").insertRow(false)<CR>', opts)
-keymap("n", "<leader>tk", ':lua require("tablemd").insertRow(true)<CR>', opts)
-keymap("n", "<leader>tq", ':lua require("tablemd").alignColumn("left")<CR>', opts)
-keymap("n", "<leader>tw", ':lua require("tablemd").alignColumn("center")<CR>', opts)
-keymap("n", "<leader>te", ':lua require("tablemd").alignColumn("right")<CR>', opts)
--- "autocmd Filetype markdown map <leader>w yiWi[<esc>Ea](<esc>pa)
--- autocmd Filetype markdown inoremap <buffer> ,f <Esc>/<++><CR>:nohlsearch<CR>"_c4l
--- autocmd Filetype markdown inoremap <buffer> ,w <Esc>/ <++><CR>:nohlsearch<CR>"_c5l<CR>
--- autocmd Filetype markdown inoremap <buffer> ,n ---<Enter><Enter>
--- autocmd Filetype markdown inoremap <buffer> ,b **** <++><Esc>F*hi
--- autocmd Filetype markdown inoremap <buffer> ,s ~~~~ <++><Esc>F~hi
--- autocmd Filetype markdown inoremap <buffer> ,i ** <++><Esc>F*i
--- autocmd Filetype markdown inoremap <buffer> ,d `` <++><Esc>F`i
--- autocmd Filetype markdown inoremap <buffer> ,c ```<Enter><++><Enter>```<Enter><Enter><++><Esc>4kA
--- autocmd Filetype markdown inoremap <buffer> ,m - [ ]
--- autocmd Filetype markdown inoremap <buffer> ,p ![](<++>) <++><Esc>F[a
--- autocmd Filetype markdown inoremap <buffer> ,a [](<++>) <++><Esc>F[a
--- autocmd Filetype markdown inoremap <buffer> ,1 #<Space><Enter><++><Esc>kA
--- autocmd Filetype markdown inoremap <buffer> ,2 ##<Space><Enter><++><Esc>kA
--- autocmd Filetype markdown inoremap <buffer> ,3 ###<Space><Enter><++><Esc>kA
--- autocmd Filetype markdown inoremap <buffer> ,4 ####<Space><Enter><++><Esc>kA
--- autocmd Filetype markdown inoremap <buffer> ,l --------<Enter>
-
-keymap("n", "<leader>md", "<Cmd>MarkdownPreviewToggle<CR>", term_opts)

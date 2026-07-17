@@ -8,16 +8,24 @@ Last reviewed: 2026-07-17.
 
 ## Compatibility status
 
-The current configuration uses the Neovim 0.11 LSP APIs
-`vim.lsp.config()` and `vim.lsp.enable()`. Neovim **0.11 or newer** is therefore
-the supported baseline. The 2026-07-17 audit found Neovim 0.10.4 on the current
-machine and reproduced startup errors from the LSP, Telescope, and
-Mason-LSPConfig paths; see the
-[repository audit](docs/planning/repository-audit.md).
+Neovim **0.12.3** is the primary, fully featured baseline. Neovim 0.10 and
+0.11 are compatibility profiles: the core editor remains usable, while plugins
+whose locked versions require a newer Neovim are not loaded.
 
-Plugins are currently managed by Packer without a lock file or pinned commits.
-An installed plugin tree can consequently move beyond the compatibility of an
-older Neovim executable. Reproducible plugin resolution remains active work.
+| Neovim | Profile | Version-gated features |
+| --- | --- | --- |
+| 0.12.3 | primary, full feature set | all declared features; current headless/runtime checks recorded in history |
+| 0.11.7+ | compatibility | current LSP and Telescope; no current Tree-sitter stack |
+| 0.11.3-0.11.6 | compatibility | current LSP; no current Telescope or Tree-sitter stack |
+| 0.11.0-0.11.2 | basic | no current LSP, Telescope, or Tree-sitter stack |
+| 0.10.x | basic | no current LSP, Telescope, or Tree-sitter stack |
+
+Plugins are managed by lazy.nvim and resolved through the committed
+`lazy-lock.json`. Version gates are centralized in
+`lua/darkroam/compat.lua`; disabled plugins do not leave unusable custom
+keymaps behind. The exact support and validation status is documented in
+[architecture](docs/project/architecture.md) and the
+[repository audit](docs/planning/repository-audit.md).
 
 ## Installation
 
@@ -29,10 +37,10 @@ git clone https://github.com/darkroam/nvim-config ~/.config/nvim
 nvim
 ```
 
-The first start bootstraps Packer through Git and synchronizes declared
-plugins. Restart Neovim after bootstrap and run `:PackerSync` if synchronization
-did not finish. Mason and Tree-sitter may then install resources selected by
-the language switches, so initial setup requires network access.
+The first start bootstraps the pinned lazy.nvim manager through Git, then
+restores the plugin commits in `lazy-lock.json`. Use `:Lazy` to inspect the
+result. Mason packages and Tree-sitter parsers are machine-local resources;
+installing them is an explicit maintenance action and requires network access.
 
 The core runtime requires Git and `zsh`; editor integrations additionally use
 tools such as a clipboard provider, `rg`, `fd`/`fdfind`, a C toolchain, and a
@@ -43,15 +51,12 @@ levels and providers are in [dependencies](docs/project/dependencies.md).
 
 ```text
 init.lua
+  |-- Lua module loader
   |-- options and custom autocommands
-  |-- global keymaps
-  |-- Packer bootstrap and plugin declarations
-  |-- neosolarized colorscheme
-  `-- optional impatient profiling and OS-specific options
-
-Neovim runtime loading
-  |-- plugin/*.lua        LSP setup and dormant Lspsaga hook
-  `-- after/plugin/*.lua  configuration for available start plugins
+  |-- plugin-independent global keymaps
+  |-- pinned lazy.nvim bootstrap
+  |-- version-gated plugin specs and configuration
+  `-- OS-specific clipboard options
 ```
 
 The complete ownership and load-order description is in

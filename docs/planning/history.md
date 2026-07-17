@@ -3,6 +3,30 @@
 本文件只记录已经完成并验证的项目。活动和挂起工作分别见 [`todo.md`](todo.md) 与
 [`suspended.md`](suspended.md)。
 
+## 2026-07-17：Lazy、Neovim 0.12 与旧版降级兼容
+
+- [x] 经方案确认，以 Neovim 0.12.3 为完整功能主路径，建立 `compat.lua` 的 LSP 0.11.3、Telescope
+  0.11.7、Tree-sitter 0.12.0 集中门槛；0.11 保持未实测标记。
+- [x] 将停止维护且无锁的 Packer 迁移为 lazy.nvim 11.17.5；manager 与 31 个受管 plugin commit 共 32 条
+  写入 `lazy-lock.json`，文档检查器验证声明、inventory、lock 和 bootstrap commit 一致。
+- [x] 将全部活动配置迁到 7 个 Lazy spec；插件命令、按键、依赖和 `cond` 同处声明，旧版不再执行
+  `plugin/`/`after/plugin/` 的不兼容路径。实际 Packer tree 已移到
+  `~/.local/share/nvim/packer-backup-20260717`，保留回滚副本。
+- [x] 修正 Mason-LSPConfig 的 `automatic_enable=false`，只在显式 `:LspInstall` 时刷新 registry；0.12.3
+  实测 Lua buffer 只有 `lua_ls` attach，C buffer 只有 `clangd` attach，StyLua 不再成为 LSP。
+- [x] 以命名 `LspAttach`/highlight augroup 和原生 document highlight 取代 Illuminate deprecated API；
+  Conform 的 StyLua 格式化和 C 的 clangd fallback 均通过实际 buffer 验证。
+- [x] 按 nvim-treesitter `main` 新 API 配置启动、高亮和缩进，单独初始化 Textobjects；parser 隔离到
+  `treesitter-0.12`，安装并通过 health 检查 `lua`、`c`、`commonlisp`，`af`/`if` 与 Elisp
+  `lisp -> commonlisp` 映射实测生效。
+- [x] Lazy 与 Telescope health 通过；0.12.3 的主题、基础 plugin 配置、锁定 checkout 和插件命令检查
+  通过。0.10.4 实测正常启动并可打开/格式化 Lua，系统 parser runtime 保留且不读取 0.12 ABI；
+  LSP/Telescope/Tree-sitter plugin 命令及仓库按键缺席，而 NvimTree、Conform、cmp、Comment、surround、
+  ToggleTerm、Lualine 和 Zsh 路径可加载。
+- [x] 删除 Packer、impatient、popup、未消费 cmp source、Illuminate、project.nvim、全部无 provider 配置
+  和 Neogit/Markdown/TableMD 失效按键；修正 Comment、LuaSnip、Conform、ToggleTerm、Lualine 与
+  autocommand 的已确认问题。
+
 ## 2026-07-17：Neovim shell 迁移至 Zsh
 
 - [x] 确认 `/usr/bin/zsh` 5.9 可用、Fish 不存在，并经方案确认后先更新架构、依赖和用户文档。

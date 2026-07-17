@@ -1,1 +1,0 @@
-﻿-- Disabled: norcalli/nvim-colorizer.lua uses deprecated APIs on current Neovim.

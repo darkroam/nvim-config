@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 import sys
@@ -31,7 +32,9 @@ REQUIRED_DOCS = (
 README_NAV_TARGETS = tuple(path for path in REQUIRED_DOCS if path != "README.md")
 
 LINK_RE = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
-PACKER_USE_RE = re.compile(r"\buse\s*\(\s*(?:\{\s*)?[\"']([^\"']+)[\"']")
+LAZY_PLUGIN_RE = re.compile(r'["\']([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)["\']')
+COMMIT_RE = re.compile(r"^[0-9a-f]{40}$")
+LAZY_COMMIT_RE = re.compile(r'^local lazy_commit = "([0-9a-f]{40})"$', re.MULTILINE)
 LANGUAGE_ENTRY_RE = re.compile(r"^\s*([a-z][a-z0-9_]*)\s*=\s*(true|false)\s*,?\s*$")
 ABSOLUTE_HOME_RE = re.compile(r"/(?:home|Users)/[^/\s`]+/")
 
@@ -107,20 +110,55 @@ def check_source_ownership(errors: list[str]) -> None:
             "docs/user/keybindings-zh.md",
         )
     )
-    for relative in git_lines("ls-files", "*.lua"):
+    for relative in git_lines(
+        "ls-files", "--cached", "--others", "--exclude-standard", "--", "*.lua"
+    ):
         if relative not in owner_text:
             errors.append(f"tracked Lua file has no documented owner: {relative}")
 
 
-def check_packer_inventory(errors: list[str]) -> None:
-    declarations = set(PACKER_USE_RE.findall(read("lua/darkroam/plugins.lua")))
+def check_lazy_inventory(errors: list[str]) -> None:
+    spec_paths = sorted((ROOT / "lua/darkroam/plugins").glob("*.lua"))
+    declarations = {
+        plugin
+        for path in spec_paths
+        for plugin in LAZY_PLUGIN_RE.findall(path.read_text(encoding="utf-8-sig"))
+    }
     inventory = read("docs/project/plugins.md")
     if not declarations:
-        errors.append("no Packer declarations parsed from lua/darkroam/plugins.lua")
+        errors.append("no Lazy declarations parsed from lua/darkroam/plugins/*.lua")
         return
+    declarations.add("folke/lazy.nvim")
     for plugin in sorted(declarations):
         if f"`{plugin}`" not in inventory:
-            errors.append(f"Packer declaration missing from plugin inventory: {plugin}")
+            errors.append(f"Lazy declaration missing from plugin inventory: {plugin}")
+
+    try:
+        lock = json.loads(read("lazy-lock.json"))
+    except (OSError, json.JSONDecodeError) as exc:
+        errors.append(f"invalid lazy-lock.json: {exc}")
+        return
+
+    expected_keys = {plugin.rsplit("/", 1)[1] for plugin in declarations}
+    for key in sorted(expected_keys - set(lock)):
+        errors.append(f"Lazy declaration missing from lockfile: {key}")
+    for key in sorted(set(lock) - expected_keys):
+        errors.append(f"lockfile plugin has no Lazy declaration: {key}")
+    for key, record in sorted(lock.items()):
+        if not isinstance(record, dict):
+            errors.append(f"invalid lockfile record for {key}")
+            continue
+        if not isinstance(record.get("branch"), str) or not record["branch"]:
+            errors.append(f"lockfile plugin has no branch: {key}")
+        commit = record.get("commit")
+        if not isinstance(commit, str) or not COMMIT_RE.fullmatch(commit):
+            errors.append(f"lockfile plugin has invalid commit: {key}")
+
+    manager_match = LAZY_COMMIT_RE.search(read("lua/darkroam/lazy.lua"))
+    if not manager_match:
+        errors.append("lazy.nvim bootstrap commit is not pinned")
+    elif lock.get("lazy.nvim", {}).get("commit") != manager_match.group(1):
+        errors.append("lazy.nvim bootstrap commit differs from lazy-lock.json")
 
 
 def check_language_tables(errors: list[str]) -> None:
@@ -183,7 +221,7 @@ def main() -> int:
             check_readme_navigation(errors)
             check_markdown_links(errors)
             check_source_ownership(errors)
-            check_packer_inventory(errors)
+            check_lazy_inventory(errors)
             check_language_tables(errors)
             check_planning_roles(errors)
             check_portability(errors)
@@ -198,7 +236,7 @@ def main() -> int:
 
     print(
         "documentation check passed: required files, navigation, links, source "
-        "ownership, plugin inventory, language tables, planning roles, portability"
+        "ownership, Lazy inventory/lockfile, language tables, planning roles, portability"
     )
     return 0
 

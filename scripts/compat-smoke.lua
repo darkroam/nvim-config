@@ -1,0 +1,163 @@
+local expected_version = assert(vim.env.DARKROAM_EXPECT_VERSION, "DARKROAM_EXPECT_VERSION is required")
+local version = vim.version()
+local actual_version = ("%d.%d.%d"):format(version.major, version.minor, version.patch)
+local profiles = {
+	["0.10.4"] = { lsp = false, telescope = false, treesitter = false },
+	["0.11.3"] = { lsp = true, telescope = false, treesitter = false },
+	["0.11.7"] = { lsp = true, telescope = true, treesitter = false },
+	["0.12.3"] = { lsp = true, telescope = true, treesitter = true },
+}
+local profile = profiles[actual_version]
+local failures = {}
+
+local function check(condition, label, detail)
+	if condition then
+		return
+	end
+	local message = label
+	if detail ~= nil then
+		message = message .. ": " .. tostring(detail)
+	end
+	table.insert(failures, message)
+end
+
+check(actual_version == expected_version, "binary-version", actual_version)
+check(profile ~= nil, "supported-profile", actual_version)
+profile = profile or { lsp = false, telescope = false, treesitter = false }
+check(vim.o.shell == "zsh", "shell-zsh", vim.o.shell)
+
+local lock_path = vim.fn.stdpath("config") .. "/lazy-lock.json"
+local lock_ok, lock = pcall(function()
+	return vim.json.decode(table.concat(vim.fn.readfile(lock_path), "\n"))
+end)
+check(lock_ok and type(lock) == "table", "lockfile-readable", lock_path)
+if not lock_ok or type(lock) ~= "table" then
+	lock = {}
+end
+
+local plugins_ok, lazy_config = pcall(require, "lazy.core.config")
+check(plugins_ok, "lazy-config-loaded", lazy_config)
+local plugins = plugins_ok and lazy_config.plugins or {}
+local groups = {
+	lsp = { "nvim-lspconfig", "mason-lspconfig.nvim" },
+	telescope = { "telescope.nvim", "telescope-file-browser.nvim", "plenary.nvim" },
+	treesitter = { "nvim-treesitter", "nvim-treesitter-textobjects" },
+}
+local disabled = {}
+for feature, names in pairs(groups) do
+	if not profile[feature] then
+		for _, name in ipairs(names) do
+			disabled[name] = true
+		end
+	end
+end
+
+local lock_count = 0
+local expected_count = 0
+for name in pairs(lock) do
+	lock_count = lock_count + 1
+	local expected_present = not disabled[name]
+	if expected_present then
+		expected_count = expected_count + 1
+	end
+	check((plugins[name] ~= nil) == expected_present, "plugin-spec:" .. name, tostring(plugins[name] ~= nil))
+end
+
+local plugin_count = 0
+for name in pairs(plugins) do
+	plugin_count = plugin_count + 1
+	check(lock[name] ~= nil, "plugin-in-lock:" .. name)
+end
+check(plugin_count == expected_count, "plugin-count", plugin_count)
+
+local lazy_root = vim.fn.stdpath("data") .. "/lazy"
+local function on_runtimepath(name)
+	local expected_path = vim.fs.normalize(lazy_root .. "/" .. name)
+	for _, path in ipairs(vim.api.nvim_list_runtime_paths()) do
+		if vim.fs.normalize(path) == expected_path then
+			return true
+		end
+	end
+	return false
+end
+
+for name in pairs(disabled) do
+	check(not on_runtimepath(name), "runtimepath-absent:" .. name)
+end
+
+local function command_exists(name)
+	return vim.fn.exists(":" .. name) == 2
+end
+
+local function mapping_exists(mode, lhs)
+	local mapping = vim.fn.maparg(lhs, mode, false, true)
+	return type(mapping) == "table" and next(mapping) ~= nil
+end
+
+local function plugin_loaded(name)
+	local plugin = plugins[name]
+	return plugin ~= nil and plugin._ ~= nil and plugin._.loaded ~= nil
+end
+
+local function trigger(command, plugin_name, close_command)
+	local ok, err = pcall(vim.cmd, command)
+	check(ok, "trigger:" .. command, err)
+	check(plugin_loaded(plugin_name), "plugin-loaded:" .. plugin_name)
+	if ok and close_command then
+		local close_ok, close_err = pcall(vim.cmd, close_command)
+		check(close_ok, "close:" .. close_command, close_err)
+	end
+end
+
+check(command_exists("LspInstall") == profile.lsp, "command-gate:LspInstall")
+check(plugin_loaded("nvim-lspconfig") == profile.lsp, "startup-load:nvim-lspconfig")
+
+local telescope_keys = { ",rr", ",dd", ",bb", ";t", ";;", ";e", ",kk", ",xf" }
+check(command_exists("Telescope") == profile.telescope, "command-gate:Telescope")
+for _, lhs in ipairs(telescope_keys) do
+	check(mapping_exists("n", lhs) == profile.telescope, "keymap-gate:n:" .. lhs)
+end
+
+local treesitter_commands = { "TSUpdate", "TSInstall", "DarkroamTSInstall" }
+for _, name in ipairs(treesitter_commands) do
+	check(command_exists(name) == profile.treesitter, "command-gate:" .. name)
+end
+for _, mapping in ipairs({ { "x", "af" }, { "o", "af" }, { "x", "if" }, { "o", "if" } }) do
+	check(mapping_exists(mapping[1], mapping[2]) == profile.treesitter, "keymap-gate:" .. table.concat(mapping, ":"))
+end
+check(plugin_loaded("nvim-treesitter") == profile.treesitter, "startup-load:nvim-treesitter")
+
+trigger("NvimTreeOpen", "nvim-tree.lua", "NvimTreeClose")
+trigger("ToggleTerm", "toggleterm.nvim", "ToggleTerm")
+trigger("ZenMode", "zen-mode.nvim", "ZenMode")
+
+if profile.telescope then
+	local ok, err = pcall(vim.cmd, "Telescope find_files")
+	check(ok, "trigger:Telescope find_files", err)
+	check(plugin_loaded("telescope.nvim"), "plugin-loaded:telescope.nvim")
+	check(plugin_loaded("telescope-file-browser.nvim"), "plugin-loaded:telescope-file-browser.nvim")
+	pcall(vim.cmd, "stopinsert")
+	pcall(vim.cmd, "close!")
+
+	local browser_ok, browser_err = pcall(vim.cmd, "Telescope file_browser")
+	check(browser_ok, "trigger:Telescope file_browser", browser_err)
+	pcall(vim.cmd, "stopinsert")
+	pcall(vim.cmd, "close!")
+end
+
+if #failures > 0 then
+	vim.api.nvim_err_writeln("DARKROAM_COMPAT_FAIL version=" .. actual_version .. "\n- " .. table.concat(failures, "\n- "))
+	vim.cmd("cquit 1")
+	return
+end
+
+vim.api.nvim_out_write(
+	("DARKROAM_COMPAT_OK version=%s plugins=%d/%d lsp=%s telescope=%s treesitter=%s\n"):format(
+		actual_version,
+		plugin_count,
+		lock_count,
+		tostring(profile.lsp),
+		tostring(profile.telescope),
+		tostring(profile.treesitter)
+	)
+)

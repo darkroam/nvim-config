@@ -88,6 +88,10 @@ git status --short
 并审阅标准输出和标准错误中的 `Error detected`、`E...`、traceback 和 provider error。网络、GUI、
 硬件或交互限制应准确写为“未验证”或“环境受限”。
 
+修改兼容门槛、Lazy spec、manager commit 或 `lazy-lock.json` 时，在拥有目标二进制与完整预恢复 data
+的环境运行 `scripts/check-compat.py`。该脚本只做离线 smoke，不替代首次 restore、Mason、LSP、parser
+或 GUI 验证；缺失的矩阵 case 必须在提交说明和兼容性文档中明确保留为未验证。
+
 ## Git 与仓库卫生
 
 - 开始和结束都检查 `git status --short --branch`，保留用户已有改动；

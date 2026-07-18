@@ -3,6 +3,22 @@
 本文件只记录已经完成并验证的重要项目，不复制原始日志或逐 commit 流水账。待办和有恢复条件的暂缓
 工作统一见 [`roadmap.md`](roadmap.md)。
 
+## 2026-07-18：四版本离线自动兼容矩阵
+
+- [x] 新增 `scripts/check-compat.py`，以重复的 `--case VERSION=NVIM_PATH` 接受显式二进制，并要求
+  `--data-home` 中全部 Lazy checkout 存在、HEAD 匹配 lockfile 且没有 tracked 修改；缺失或偏离时在
+  Neovim 启动前失败，不自动 restore、联网、安装或 build。
+- [x] 新增 `scripts/compat-smoke.lua`，在真实进程内检查版本标签、32 条 lock、活动 spec、集中功能
+  门槛、禁用插件 runtimepath、命令和仓库按键，并真实触发 NvimTree、ToggleTerm、ZenMode 以及版本
+  允许的 Telescope/file-browser。
+- [x] 使用同一套 32/32 锁定 checkout 完成 0.10.4、0.11.3、0.11.7、0.12.3 矩阵；活动 spec 数依次
+  为 25、27、30、32，LSP/Telescope/Tree-sitter 状态依次为全关、仅 LSP、LSP+Telescope、全开，
+  四档退出码和成功标记均通过，专用 Neovim 日志为空。
+- [x] 验证失败判定：声明 0.12.2 但传入 0.12.3 binary 时返回 1，缺失 data home 时在启动前返回 2；
+  输出扫描单测确认 `Error detected`、`E5113:`、traceback 和 provider error 均能令检查失败。
+- [x] `scripts/check-docs.py` 现在要求两个支持脚本存在且有文档归属；自动 smoke 不冒充首次 restore、
+  Mason、真实 LSP、formatter、parser 或 GUI 验证，这些边界继续由安装与兼容性文档维护。
+
 ## 2026-07-18：Neovim 0.11 边界实测闭环
 
 - [x] 取得官方 Neovim 0.11.3 和 0.11.7 Linux x86_64 发布包并校验 GitHub release API 提供的

@@ -28,6 +28,10 @@ REQUIRED_DOCS = (
     "docs/maintenance/roadmap.md",
     "docs/maintenance/history.md",
 )
+REQUIRED_SUPPORT_FILES = (
+    "scripts/check-compat.py",
+    "scripts/compat-smoke.lua",
+)
 
 README_NAV_TARGETS = tuple(path for path in REQUIRED_DOCS if path != "README.md")
 OWNER_DOCS = (
@@ -101,6 +105,24 @@ def check_required(errors: list[str]) -> None:
     for relative in REQUIRED_DOCS:
         if not (ROOT / relative).is_file():
             errors.append(f"missing required document: {relative}")
+    for relative in REQUIRED_SUPPORT_FILES:
+        if not (ROOT / relative).is_file():
+            errors.append(f"missing required support file: {relative}")
+
+
+def check_support_ownership(errors: list[str]) -> None:
+    owners = "\n".join(
+        read(relative)
+        for relative in (
+            "docs/guide/installation.md",
+            "docs/reference/architecture.md",
+            "docs/reference/compatibility.md",
+            "docs/maintenance/workflow.md",
+        )
+    )
+    for relative in REQUIRED_SUPPORT_FILES:
+        if f"`{relative}`" not in owners:
+            errors.append(f"support file has no documented owner: {relative}")
 
 
 def check_readme_navigation(errors: list[str]) -> None:
@@ -321,6 +343,7 @@ def main() -> int:
             check_readme_navigation(errors)
             check_markdown_links(errors)
             check_legacy_paths(errors)
+            check_support_ownership(errors)
             check_source_ownership(errors)
             check_lazy_inventory(errors)
             check_language_table(errors)
@@ -339,8 +362,8 @@ def main() -> int:
 
     print(
         "documentation check passed: structure, navigation, links, source ownership, "
-        "Lazy inventory/lockfile, compatibility gates, language state, custom keymaps, "
-        "maintenance roles, and portability"
+        "support scripts, Lazy inventory/lockfile, compatibility gates, language state, "
+        "custom keymaps, maintenance roles, and portability"
     )
     return 0
 

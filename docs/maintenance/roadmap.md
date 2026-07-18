@@ -5,8 +5,6 @@
 
 ## P0：兼容性验证
 
-- [ ] 取得 Neovim 0.11.3 和 0.11.7 二进制，分别验证 LSP-only 与 LSP+Telescope 档位；完成前
-  `compatibility.md` 保持“设计目标、未实测”。
 - [ ] 为 0.10.4、0.11.3、0.11.7 和 0.12.3 建立离线优先的自动验证或 CI，使 startup output 中的
   `Error detected`、`E...` 和 traceback 能令检查失败。
 - [ ] 决定下载目录中 0.12.3 二进制的稳定安装位置；配置不得硬编码本机路径。
@@ -17,6 +15,9 @@
   安装 Mason 工具和 parser、验证结果并输出摘要；不得在启动时自动联网或调用系统包管理器。
 - [ ] 补齐 C 格式化 provider 或调整 C 的 Conform 行为；区分 Mason `clangd` 和独立
   `clang-format`，未安装前不能把实际 C 格式化记为通过。
+- [ ] 在升级到 clangd 23 或更新 nvim-lspconfig 前，处理其将移除的旧 `offsetEncoding` 扩展：当前
+  锁定 nvim-lspconfig 会声明该能力，clangd 22.1.6 记录弃用提示但 initialize、hover 和 shutdown
+  均通过；后续方案必须验证标准 `positionEncodings` 协商，而不是只过滤 server stderr。
 
 ## P1：编辑行为
 

@@ -3,6 +3,24 @@
 本文件只记录已经完成并验证的重要项目，不复制原始日志或逐 commit 流水账。待办和有恢复条件的暂缓
 工作统一见 [`roadmap.md`](roadmap.md)。
 
+## 2026-07-18：Neovim 0.11 边界实测闭环
+
+- [x] 取得官方 Neovim 0.11.3 和 0.11.7 Linux x86_64 发布包并校验 GitHub release API 提供的
+  SHA-256，分别为 `02b808a3ee8fc30161e07fe3c3edfb24b28bd0295323ac5dbdd8ec7012cac67d` 和
+  `38a7c6317f94503841096c00e8fde05ef04b9472fc9d7d62b6e033cecd6f7991`；测试配置副本指向
+  `8289b0f` 且工作树干净。
+- [x] 使用两套独立 HOME 与 XDG data/state/cache 完成首次 Lazy restore：0.11.3 的 27 个 checkout
+  和 0.11.7 的 30 个 checkout 全部匹配 lockfile，LuaSnip `jsregexp` build 通过；前者只有 LSP
+  档位，后者同时启用 LSP 与 Telescope，两档均完整禁用当前 Tree-sitter 栈。
+- [x] 两档都由 Mason 成功安装 `lua-language-server` 3.18.2-dev 和 `clangd` 22.1.6；真实 Lua/C
+  buffer 只有预期 client attach，并通过 project root、buffer-local `gd`、hover、LuaLS formatting
+  禁用和优雅 shutdown 检查。
+- [x] 0.11.3 与 0.11.7 均通过 NvimTree、ToggleTerm、ZenMode 和 Zsh 真实触发；0.11.7 还通过
+  Telescope 与 file-browser 真实触发，0.11.3 则确认相关 spec、checkout、命令和按键全部缺席。
+- [x] 最终沙箱外门控和 LSP 探针退出码均为 0，专用 Neovim 日志为空。clangd 22.1.6 对锁定
+  nvim-lspconfig 的旧 `offsetEncoding` 扩展记录弃用提示但不影响当前请求；clangd 23 前的标准能力
+  迁移已进入 roadmap，没有在本轮静默修改运行配置。
+
 ## 2026-07-18：LuaLS 沙箱超时定界
 
 - [x] 在受限沙箱中用 LuaLS 3.18.2 运行无 `workspace.library` 的最小 LSP 探针；Neovim 成功发送

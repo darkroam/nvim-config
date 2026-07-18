@@ -59,8 +59,10 @@ nvim
 
 Tree-sitter 首次 build 使用上游推荐的 `build = ":TSUpdate"`。Lazy 处理冒号命令时会先加载插件
 和配置，再执行已注册的命令；这取代了曾在命令注册前直接调用 `vim.cmd.TSUpdate()` 的自定义函数。
-2026-07-18 针对当前工作树的全新 XDG data/state/cache 复测确认首次 restore 的 Lazy task 为 0 error，
-Tree-sitter build 正常输出 `All parsers are up-to-date`。发布后的 GitHub clone 复验仍由 roadmap 跟踪。
+2026-07-18 修复 `03ea599` 发布到 GitHub `main` 后，从远端全新 clone，并使用独立 `HOME` 与
+XDG data/state/cache 复测。Neovim 0.12.3 的首次 restore 确认全部 Lazy task 为 0 error、32/32 checkout
+匹配 lockfile，Tree-sitter build 正常输出 `All parsers are up-to-date`。另一套 clean data 上的
+Neovim 0.10.4 restore 同样为 0 task error，且按兼容策略不恢复 LSP、Telescope 和 Tree-sitter。
 
 完成后检查：
 

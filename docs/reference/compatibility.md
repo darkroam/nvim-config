@@ -17,7 +17,7 @@
 
 | Neovim | 档位 | LSP | Telescope | Tree-sitter | 验证状态 |
 | --- | --- | --- | --- | --- | --- |
-| 0.12.3 | 完整 | 启用 | 启用 | `main` 新 API 与 Textobjects | 当前工作树已通过隔离首次 Lazy、Mason、parser、插件触发、C/Elisp 和 StyLua 验证；LuaLS initialize、发布后 clone 和 GUI 仍未完成 |
+| 0.12.3 | 完整 | 启用 | 启用 | `main` 新 API 与 Textobjects | GitHub `main` 的发布后 clone 已通过隔离首次 Lazy、Mason、parser、插件触发、C/Elisp 和 StyLua 验证；LuaLS initialize 和 GUI 仍未完成 |
 | 0.11.7+ | 降级 | 启用 | 启用 | 当前栈禁用 | 设计目标，尚未取得对应二进制实测 |
 | 0.11.3-0.11.6 | 降级 | 启用 | 禁用 | 当前栈禁用 | 设计目标，尚未取得对应二进制实测 |
 | 0.11.0-0.11.2 | 基础 | 禁用 | 禁用 | 当前栈禁用 | 设计目标，尚未取得对应二进制实测 |
@@ -39,10 +39,11 @@
 门槛针对仓库当前锁定的插件 commit，不是对上游未来版本的永久承诺。更新 `lazy-lock.json` 后必须重新
 检查每个可取得档位，不能仅凭旧结论继续声称兼容。
 
-Tree-sitter 已使用 Lazy 标准冒号 build，隔离首次恢复的 32/32 checkout、LuaSnip build 和全部 Lazy
-task 均通过。相同环境还确认 Mason 四个工具、三个 parser、C/Elisp buffer 和活动插件命令；LuaLS
-虽自动启动但 180 秒内未完成 initialize，因此完整档位仍保留该未验证项。0.10.4 的独立 clean data
-restore 为 0 task error，LSP、Telescope 和 Tree-sitter spec、checkout、命令与按键均保持缺席。
+Tree-sitter 已使用 Lazy 标准冒号 build。发布修复 `03ea599` 后，从 GitHub `main` 全新 clone 的隔离
+首次恢复确认 32/32 checkout、LuaSnip build 和全部 Lazy task 均通过；相同环境还确认 Mason 四个
+工具、三个 parser、C/Elisp buffer 和活动插件命令。LuaLS 虽自动启动但 180 秒内未完成 initialize，
+因此完整档位仍保留该未验证项。0.10.4 使用另一套 clean data restore 为 0 task error，LSP、Telescope
+和 Tree-sitter spec、checkout、命令与按键均保持缺席，基础插件真实命令和 Zsh 路径通过。
 
 ## 共享状态边界
 

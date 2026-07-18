@@ -15,7 +15,7 @@
 
 | 软件或能力 | 级别 | 用途与边界 |
 | --- | --- | --- |
-| 受支持的 Neovim | 核心 | 完整和降级档位的准确版本、功能与实测状态只在兼容性文档维护 |
+| 受支持的 Neovim | 核心 | 完整和降级档位的准确版本、功能与实测状态只在兼容性文档维护；Linux 官方 tarball 使用版本化用户目录，日常版本由 machine-local `profile.local` 和 `current` symlink 选择，不硬编码到仓库配置 |
 | Git | 核心 | 固定版本 lazy.nvim bootstrap、锁定插件恢复和版本库功能 |
 | `zsh` | 核心 | `vim.opt.shell` 的固定值，也是 ToggleTerm 和 `:!` 命令的 shell；缺失时 shell 功能失败 |
 | 网络与 TLS 证书 | 功能必需 | 首次 Lazy bootstrap/插件恢复、Mason 和 Tree-sitter 下载；稳定离线编辑不应持续依赖网络 |
@@ -83,9 +83,9 @@ ToggleTerm 为以下命令定义了全局 Lua toggle 函数，但没有仓库级
 | C compiler、`make` 及标准构建环境 | 功能必需 | Tree-sitter parser 或插件原生构建路径 |
 | `tar`、`curl` | 功能必需 | nvim-treesitter `main` 下载和解包 parser source |
 | `tree-sitter` CLI 0.26.1+ | 功能必需 | nvim-treesitter `main` parser 生成；可由 Mason 的 `tree-sitter-cli` 提供 |
-| Python 3 | 维护 | 运行 `scripts/check-docs.py`；也是当前文档架构唯一额外检查运行时 |
+| Python 3 | 维护 | 运行 `scripts/check-docs.py` 和离线矩阵驱动器 `scripts/check-compat.py` |
 | `git diff --check` | 维护 | 检查空白错误和冲突标记 |
-| Headless Neovim | 维护 | Lua/startup 验证；必须同时审阅输出和退出码 |
+| Headless Neovim | 维护 | Lua/startup 验证和兼容矩阵；必须同时审阅输出、专用日志和退出码 |
 
 旧 README 中的 Cargo、Node、全局 Prettier、Pyright、eslint_d、Black、Flake8、Go 工具等安装步骤
 不再作为无条件清单保留。只有当声明的功能、语言开关或已确认的后续方案实际需要它们时，才在本文件

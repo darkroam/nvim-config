@@ -3,6 +3,23 @@
 本文件只记录已经完成并验证的重要项目，不复制原始日志或逐 commit 流水账。待办和有恢复条件的暂缓
 工作统一见 [`roadmap.md`](roadmap.md)。
 
+## 2026-07-18：Neovim 用户级多版本安装
+
+- [x] 从 GitHub release API 核对官方 Linux x86_64 asset，并验证 tarball 大小与 SHA-256：0.11.3 为
+  `02b808a3ee8fc30161e07fe3c3edfb24b28bd0295323ac5dbdd8ec7012cac67d`，0.11.7 为
+  `38a7c6317f94503841096c00e8fde05ef04b9472fc9d7d62b6e033cecd6f7991`，0.12.3 为
+  `c441b547142860bf01bcce39e36cbed185c41112813e15443b16e5237750724d`。
+- [x] 将三档完整发布树安装到 `~/.local/opt/neovim/{0.11.3,0.11.7,0.12.3}`，建立
+  `current -> 0.12.3`；Downloads 中 0.12.3 现有解压树与官方 tarball 逐文件一致后再移动，原 tarball
+  保留为恢复源，系统 `/usr/bin/nvim` 0.10.4 未改动。
+- [x] 唯一修改的 shell 配置是 machine-local `~/.config/shell/profile.local`：以存在性检查将
+  `current/bin` 放到 PATH 前端并设置 `EDITOR`。没有创建 `~/.local/bin/nvim`；`.zshrc`、`.zprofile`、
+  `.bashrc`、`.profile` 和共享 `shell/profile` 的 SHA-256 与修改前逐项相同。
+- [x] 干净登录 Zsh 解析到 `current/bin/nvim` 和 0.12.3；三个用户级版本均从各自安装前缀加载 runtime，
+  退出码为 0 且专用日志为空。稳定路径四版本离线矩阵再次得到 25/27/30/32 个活动 spec 并全部通过。
+- [x] 仓库 Lua 配置和 tracked shell 文件没有本机二进制路径；自动矩阵对旧版使用不可变版本目录，日常
+  选择只由 `current` 与未跟踪 `profile.local` 管理。
+
 ## 2026-07-18：四版本离线自动兼容矩阵
 
 - [x] 新增 `scripts/check-compat.py`，以重复的 `--case VERSION=NVIM_PATH` 接受显式二进制，并要求

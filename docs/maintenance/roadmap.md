@@ -15,9 +15,6 @@
 
 - [ ] 为已确认方向另提实现方案：增加用户显式调用的 `:DarkroamBootstrap`，按 `languages.lua`
   安装 Mason 工具和 parser、验证结果并输出摘要；不得在启动时自动联网或调用系统包管理器。
-- [ ] 定界纯净环境中的 LuaLS initialize 超时：Mason package、可执行路径、root、native LSP config
-  和自动启动均已确认，server 在 180 秒内未完成 initialize；需要区分沙箱限制、runtime library
-  扫描成本和配置问题，再决定是否调整或只改验证方法。
 - [ ] 补齐 C 格式化 provider 或调整 C 的 Conform 行为；区分 Mason `clangd` 和独立
   `clang-format`，未安装前不能把实际 C 格式化记为通过。
 

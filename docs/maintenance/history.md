@@ -3,6 +3,18 @@
 本文件只记录已经完成并验证的重要项目，不复制原始日志或逐 commit 流水账。待办和有恢复条件的暂缓
 工作统一见 [`roadmap.md`](roadmap.md)。
 
+## 2026-07-18：LuaLS 沙箱超时定界
+
+- [x] 在受限沙箱中用 LuaLS 3.18.2 运行无 `workspace.library` 的最小 LSP 探针；Neovim 成功发送
+  initialize，server 回复 `$/hello`，但内部 worker 在 20 秒内没有处理 initialize，排除 runtime
+  library 扫描和仓库配置作为超时前提。
+- [x] 同一个 Mason package、workspace 和最小探针在沙箱外 59 ms 完成 initialize，确认超时来自
+  当前执行沙箱的进程、线程或 IPC 限制，不需要修改 LSP 启动命令。
+- [x] 沙箱外加载本仓库真实配置，LuaLS 在 55 ms 内自动 attach；root、当前 runtime library 入口、
+  buffer-local `gd`、关闭 server formatting 和实际 hover 请求均通过。
+- [x] Neovim 专用日志为空，LSP 日志没有错误或 warning；保留当前 `workspace.library` 和 plugin spec，
+  仅校正文档与验证方法，并从 roadmap 移除该定界项。
+
 ## 2026-07-18：发布后纯净 clone 验证
 
 - [x] 从 GitHub `main` 全新 clone，确认远端与测试工作树都指向修复提交
@@ -15,8 +27,8 @@
   `clang-format` 仍保持缺失。
 - [x] Neovim 0.10.4 使用另一套 clean data 完成 0 task error restore；LSP、Telescope、Tree-sitter
   的 spec、checkout、命令和仓库按键保持缺席，NvimTree、ToggleTerm、ZenMode 和 Zsh 路径通过。
-- [x] LuaLS 仅确认 package、配置和自动启动，180 秒内仍未完成 initialize；GUI/终端交互也未由
-  headless 测试替代，两项继续由 roadmap 跟踪。
+- [x] LuaLS 当时仅确认 package、配置和自动启动，180 秒内未完成 initialize，未冒充通过；后续已由
+  本页上方的沙箱外验证闭环。GUI/终端交互仍未由 headless 测试替代，继续由 roadmap 跟踪。
 
 ## 2026-07-18：Tree-sitter 首次安装修复
 
@@ -30,8 +42,8 @@
   均通过，独立 `clang-format` 仍按文档保持缺失。
 - [x] Neovim 0.10.4 使用另一套 clean data 完成 0 error restore；LSP、Telescope、Tree-sitter 的
   spec、checkout、命令和按键缺席，NvimTree、ToggleTerm、ZenMode 与 Zsh 基础路径可用。
-- [x] LuaLS package、root、配置和自动启动已确认，但 180 秒内未完成 initialize；该结果与发布后的
-  GitHub clone 复验没有冒充通过，继续由 roadmap 跟踪。
+- [x] LuaLS package、root、配置和自动启动已确认，但 180 秒内未完成 initialize；该阶段没有冒充
+  通过，后续由本页上方的沙箱内外对照验证完成定界。
 
 ## 2026-07-18：纯净安装失败定界
 

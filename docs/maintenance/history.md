@@ -3,6 +3,21 @@
 本文件只记录已经完成并验证的重要项目，不复制原始日志或逐 commit 流水账。待办和有恢复条件的暂缓
 工作统一见 [`roadmap.md`](roadmap.md)。
 
+## 2026-07-18：Tree-sitter 首次安装修复
+
+- [x] 将直接执行 `vim.cmd.TSUpdate()` 的自定义 build 函数改为上游推荐的
+  `build = ":TSUpdate"`；Lazy 在执行冒号命令前加载 plugin 和 config，首次恢复不再遇到命令注册
+  顺序错误。
+- [x] 使用全新隔离 XDG data/state/cache 验证 Neovim 0.12.3 首次 `:Lazy! restore`：全部 Lazy task
+  为 0 error，32/32 checkout 匹配 lockfile，Tree-sitter build 和 LuaSnip `jsregexp` build 通过。
+- [x] 在同一隔离环境由 Mason 安装四个声明工具并构建 `lua`、`c`、`commonlisp` parser；C 的 clangd
+  attach、Lua StyLua、C/Lua/Elisp parser 和 NvimTree、ToggleTerm、ZenMode、Telescope 实际命令触发
+  均通过，独立 `clang-format` 仍按文档保持缺失。
+- [x] Neovim 0.10.4 使用另一套 clean data 完成 0 error restore；LSP、Telescope、Tree-sitter 的
+  spec、checkout、命令和按键缺席，NvimTree、ToggleTerm、ZenMode 与 Zsh 基础路径可用。
+- [x] LuaLS package、root、配置和自动启动已确认，但 180 秒内未完成 initialize；该结果与发布后的
+  GitHub clone 复验没有冒充通过，继续由 roadmap 跟踪。
+
 ## 2026-07-18：纯净安装失败定界
 
 - [x] 使用独立 `HOME` 和 XDG config/data/state/cache，从 GitHub `main` 重新 clone，确认测试对象为

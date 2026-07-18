@@ -17,7 +17,7 @@
 
 | Neovim | 档位 | LSP | Telescope | Tree-sitter | 验证状态 |
 | --- | --- | --- | --- | --- | --- |
-| 0.12.3 | 完整 | 启用 | 启用 | `main` 新 API 与 Textobjects | 既有环境已完成 headless、runtime 和语言 buffer 验证；纯净首次恢复因 Tree-sitter build 顺序缺陷未通过，GUI 仍需单独检查 |
+| 0.12.3 | 完整 | 启用 | 启用 | `main` 新 API 与 Textobjects | 当前工作树已通过隔离首次 Lazy、Mason、parser、插件触发、C/Elisp 和 StyLua 验证；LuaLS initialize、发布后 clone 和 GUI 仍未完成 |
 | 0.11.7+ | 降级 | 启用 | 启用 | 当前栈禁用 | 设计目标，尚未取得对应二进制实测 |
 | 0.11.3-0.11.6 | 降级 | 启用 | 禁用 | 当前栈禁用 | 设计目标，尚未取得对应二进制实测 |
 | 0.11.0-0.11.2 | 基础 | 禁用 | 禁用 | 当前栈禁用 | 设计目标，尚未取得对应二进制实测 |
@@ -39,9 +39,10 @@
 门槛针对仓库当前锁定的插件 commit，不是对上游未来版本的永久承诺。更新 `lazy-lock.json` 后必须重新
 检查每个可取得档位，不能仅凭旧结论继续声称兼容。
 
-兼容矩阵中的既有运行验证不代表纯净安装已通过。2026-07-18 使用 GitHub `main` 的隔离 XDG clone
-实测 0.12.3 时，Lazy 的 32 个 checkout 全部匹配 lockfile，LuaSnip build 成功，但
-`nvim-treesitter` 首次 build 输出 `Command not found: TSUpdate`；因此完整档位的安装状态仍为未通过。
+Tree-sitter 已使用 Lazy 标准冒号 build，隔离首次恢复的 32/32 checkout、LuaSnip build 和全部 Lazy
+task 均通过。相同环境还确认 Mason 四个工具、三个 parser、C/Elisp buffer 和活动插件命令；LuaLS
+虽自动启动但 180 秒内未完成 initialize，因此完整档位仍保留该未验证项。0.10.4 的独立 clean data
+restore 为 0 task error，LSP、Telescope 和 Tree-sitter spec、checkout、命令与按键均保持缺席。
 
 ## 共享状态边界
 

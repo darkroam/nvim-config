@@ -34,10 +34,7 @@ return {
 		branch = "main",
 		cond = treesitter_enabled,
 		lazy = false,
-		build = function()
-			require("nvim-treesitter").setup({ install_dir = install_dir })
-			vim.cmd.TSUpdate()
-		end,
+		build = ":TSUpdate",
 		dependencies = {
 			{
 				"nvim-treesitter/nvim-treesitter-textobjects",

@@ -1,3 +1,5 @@
 sessions
 plugged
 plugin/packer_compiled.lua
+/.nvimlog
+/nvim.log

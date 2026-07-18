@@ -15,8 +15,12 @@
 
 - [ ] 为已确认方向另提实现方案：增加用户显式调用的 `:DarkroamBootstrap`，按 `languages.lua`
   安装 Mason 工具和 parser、验证结果并输出摘要；不得在启动时自动联网或调用系统包管理器。
-- [ ] 在隔离 XDG data/state/cache 的纯净本地 clone 中，验证 Lazy bootstrap、lockfile restore、
-  LuaSnip build、Mason、Tree-sitter 和实际插件触发路径；发现配置问题时另提修复方案。
+- [ ] 另提修复方案：`nvim-treesitter` 首次 Lazy build 在插件脚本注册命令前调用 `:TSUpdate`；
+  0.12.3 隔离 clone 的 `:Lazy! restore` 因 `Command not found: TSUpdate` 未通过，不能被退出码 0
+  或第二次启动掩盖。
+- [ ] 修复上述阻塞项后，在隔离 XDG data/state/cache 的纯净 GitHub clone 中重新验证 Lazy bootstrap、
+  lockfile restore、LuaSnip build、Mason、Tree-sitter、实际插件触发路径和 0.10.4 降级路径；本轮只
+  确认 32/32 checkout 与 lockfile 匹配、LuaSnip build 成功，后续阶段尚未执行。
 - [ ] 补齐 C 格式化 provider 或调整 C 的 Conform 行为；区分 Mason `clangd` 和独立
   `clang-format`，未安装前不能把实际 C 格式化记为通过。
 

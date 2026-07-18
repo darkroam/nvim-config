@@ -3,6 +3,18 @@
 本文件只记录已经完成并验证的重要项目，不复制原始日志或逐 commit 流水账。待办和有恢复条件的暂缓
 工作统一见 [`roadmap.md`](roadmap.md)。
 
+## 2026-07-18：纯净安装失败定界
+
+- [x] 使用独立 `HOME` 和 XDG config/data/state/cache，从 GitHub `main` 重新 clone，确认测试对象为
+  `a44507c0d8735f23651d04bc23db797ee8d90c85` 且 clone 工作树干净。
+- [x] Neovim 0.12.3 首次 `:Lazy! restore` 完成 lazy.nvim bootstrap；manager 与 31 个受管插件共
+  32/32 checkout 匹配 `lazy-lock.json`，LuaSnip 的 `jsregexp` 原生模块构建成功。
+- [x] 完整输出同时确认 `nvim-treesitter` build 报
+  `Command not found: TSUpdate`；第二次启动时 `:TSUpdate` 和 `:TSInstall` 均已注册，故根因是首次
+  build 与 plugin 命令注册的顺序，而不是锁文件缺失。
+- [x] 一次代理 TLS fetch 中断没有改变最终 checkout，但配置错误已经使纯净安装失败；按获批边界
+  停止 Mason、parser、语言 buffer 和 0.10.4 后续验证，修复与完整复测继续由 roadmap 跟踪。
+
 ## 2026-07-18：个人配置文档重组
 
 - [x] 对比 rafi/vim-config、jdhao/nvim-config、brainfucksec/neovim-lua、ayamir/nvimdots 和

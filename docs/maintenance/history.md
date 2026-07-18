@@ -3,6 +3,25 @@
 本文件只记录已经完成并验证的重要项目，不复制原始日志或逐 commit 流水账。待办和有恢复条件的暂缓
 工作统一见 [`roadmap.md`](roadmap.md)。
 
+## 2026-07-19：显式语言工具链 Bootstrap
+
+- [x] 新增 `lua/darkroam/bootstrap.lua`，在 Lazy setup 后只注册 `:DarkroamBootstrap`；普通启动不加载
+  基础档位的 Mason、不刷新 registry、不安装工具或 parser，也不修改系统包和 shell/网络环境配置。
+- [x] 命令按 `languages.lua` 和兼容门槛生成稳定计划：0.10.4 为 `stylua`，0.11.3/0.11.7 加入
+  `lua-language-server`、`clangd`，0.12.3 再加入 `tree-sitter-cli` 与 `lua`、`c`、`commonlisp` parser；
+  Go 保持关闭但映射随语言开关预留。
+- [x] 已安装 Mason 项和 parser 幂等跳过；存在缺项时才刷新 registry，并发安装 Mason 项后再构建
+  parser。模块拒绝重复并发调用，通过 `plan()`、`is_running()`、`last_report()` 暴露可测试只读状态。
+- [x] 最终验证同时检查 Mason package、对应可执行命令和 parser 实际 ABI 加载；摘要区分 `OK`、
+  `PARTIAL`、`FAILED`。当前四个 Mason 项和三个 parser 均通过，但独立 `clang-format` 缺失，所以没有
+  冒充完整成功，真实结果为 `PARTIAL`。
+- [x] 在空 Mason/parser 的隔离 XDG data 中完成首次执行：StyLua 2.5.2、LuaLS 3.18.2-dev、
+  clangd 22.1.6、Tree-sitter CLI 0.26.11 和三个 parser 全部安装；三个 parser 均实际加载并解析示例，
+  随后复跑时 4/4 Mason、3/3 parser 全部 `skipped`，两次专用日志均为空。
+- [x] 系统 Neovim 0.10.4 在同一数据上实际执行时只消费并跳过 StyLua，未触发 LSP/parser；最终离线
+  四版本矩阵继续得到 25/27/30/32 个活动 spec，并新增命令存在、启动无报告、Mason 无额外启动加载和
+  四档 `plan()` 的断言，全部退出为 0 且专用日志为空。
+
 ## 2026-07-18：Neovim 用户级多版本安装
 
 - [x] 从 GitHub release API 核对官方 Linux x86_64 asset，并验证 tarball 大小与 SHA-256：0.11.3 为

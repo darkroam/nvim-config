@@ -2,10 +2,34 @@ local expected_version = assert(vim.env.DARKROAM_EXPECT_VERSION, "DARKROAM_EXPEC
 local version = vim.version()
 local actual_version = ("%d.%d.%d"):format(version.major, version.minor, version.patch)
 local profiles = {
-	["0.10.4"] = { lsp = false, telescope = false, treesitter = false },
-	["0.11.3"] = { lsp = true, telescope = false, treesitter = false },
-	["0.11.7"] = { lsp = true, telescope = true, treesitter = false },
-	["0.12.3"] = { lsp = true, telescope = true, treesitter = true },
+	["0.10.4"] = {
+		lsp = false,
+		telescope = false,
+		treesitter = false,
+		mason = { "stylua" },
+		parsers = {},
+	},
+	["0.11.3"] = {
+		lsp = true,
+		telescope = false,
+		treesitter = false,
+		mason = { "stylua", "lua-language-server", "clangd" },
+		parsers = {},
+	},
+	["0.11.7"] = {
+		lsp = true,
+		telescope = true,
+		treesitter = false,
+		mason = { "stylua", "lua-language-server", "clangd" },
+		parsers = {},
+	},
+	["0.12.3"] = {
+		lsp = true,
+		telescope = true,
+		treesitter = true,
+		mason = { "stylua", "lua-language-server", "clangd", "tree-sitter-cli" },
+		parsers = { "lua", "c", "commonlisp" },
+	},
 }
 local profile = profiles[actual_version]
 local failures = {}
@@ -23,7 +47,7 @@ end
 
 check(actual_version == expected_version, "binary-version", actual_version)
 check(profile ~= nil, "supported-profile", actual_version)
-profile = profile or { lsp = false, telescope = false, treesitter = false }
+profile = profile or { lsp = false, telescope = false, treesitter = false, mason = {}, parsers = {} }
 check(vim.o.shell == "zsh", "shell-zsh", vim.o.shell)
 
 local lock_path = vim.fn.stdpath("config") .. "/lazy-lock.json"
@@ -99,6 +123,10 @@ local function plugin_loaded(name)
 	return plugin ~= nil and plugin._ ~= nil and plugin._.loaded ~= nil
 end
 
+local function same_list(actual, expected)
+	return type(actual) == "table" and table.concat(actual, "\0") == table.concat(expected, "\0")
+end
+
 local function trigger(command, plugin_name, close_command)
 	local ok, err = pcall(vim.cmd, command)
 	check(ok, "trigger:" .. command, err)
@@ -111,6 +139,23 @@ end
 
 check(command_exists("LspInstall") == profile.lsp, "command-gate:LspInstall")
 check(plugin_loaded("nvim-lspconfig") == profile.lsp, "startup-load:nvim-lspconfig")
+
+local bootstrap = require("darkroam.bootstrap")
+local bootstrap_plan = bootstrap.plan()
+check(command_exists("DarkroamBootstrap"), "command:DarkroamBootstrap")
+check(not bootstrap.is_running(), "bootstrap-idle")
+check(bootstrap.last_report() == nil, "bootstrap-no-startup-report")
+check(bootstrap_plan.version == actual_version, "bootstrap-plan:version", bootstrap_plan.version)
+check(bootstrap_plan.features.lsp == profile.lsp, "bootstrap-plan:lsp")
+check(bootstrap_plan.features.treesitter == profile.treesitter, "bootstrap-plan:treesitter")
+check(same_list(bootstrap_plan.mason, profile.mason), "bootstrap-plan:mason", vim.inspect(bootstrap_plan.mason))
+check(same_list(bootstrap_plan.parsers, profile.parsers), "bootstrap-plan:parsers", vim.inspect(bootstrap_plan.parsers))
+check(
+	same_list(bootstrap_plan.external, { "clang-format" }),
+	"bootstrap-plan:external",
+	vim.inspect(bootstrap_plan.external)
+)
+check(plugin_loaded("mason.nvim") == profile.lsp, "bootstrap-no-startup-mason-load")
 
 local telescope_keys = { ",rr", ",dd", ",bb", ";t", ";;", ";e", ",kk", ",xf" }
 check(command_exists("Telescope") == profile.telescope, "command-gate:Telescope")
@@ -146,7 +191,9 @@ if profile.telescope then
 end
 
 if #failures > 0 then
-	vim.api.nvim_err_writeln("DARKROAM_COMPAT_FAIL version=" .. actual_version .. "\n- " .. table.concat(failures, "\n- "))
+	vim.api.nvim_err_writeln(
+		"DARKROAM_COMPAT_FAIL version=" .. actual_version .. "\n- " .. table.concat(failures, "\n- ")
+	)
 	vim.cmd("cquit 1")
 	return
 end

@@ -5,8 +5,6 @@
 
 ## P1：安装与工具链
 
-- [ ] 为已确认方向另提实现方案：增加用户显式调用的 `:DarkroamBootstrap`，按 `languages.lua`
-  安装 Mason 工具和 parser、验证结果并输出摘要；不得在启动时自动联网或调用系统包管理器。
 - [ ] 补齐 C 格式化 provider 或调整 C 的 Conform 行为；区分 Mason `clangd` 和独立
   `clang-format`，未安装前不能把实际 C 格式化记为通过。
 - [ ] 在升级到 clangd 23 或更新 nvim-lspconfig 前，处理其将移除的旧 `offsetEncoding` 扩展：当前

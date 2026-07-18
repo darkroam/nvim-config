@@ -1,7 +1,8 @@
 # 依赖清单
 
-本文是外部运行时、命令和提供者的权威来源。插件名称和配置状态见 [`plugins.md`](plugins.md)；
-某台机器的安装快照见 [`../planning/repository-audit.md`](../planning/repository-audit.md)。
+本文是外部运行时、命令和提供者的权威来源。插件名称和配置状态见 [`plugins.md`](plugins.md)，
+版本档位见 [`compatibility.md`](compatibility.md)，安装顺序见
+[`../guide/installation.md`](../guide/installation.md)。
 
 要求级别含义：
 
@@ -14,8 +15,7 @@
 
 | 软件或能力 | 级别 | 用途与边界 |
 | --- | --- | --- |
-| Neovim 0.12.3 | 核心 | 完整支持和主要验证版本；启用当前 LSP、Telescope、nvim-treesitter `main` 与 Textobjects |
-| Neovim 0.10+ | 降级核心 | 最低兼容档位；0.10/0.11 按 `compat.lua` 门槛禁用过新的插件，不保证完整功能 |
+| 受支持的 Neovim | 核心 | 完整和降级档位的准确版本、功能与实测状态只在兼容性文档维护 |
 | Git | 核心 | 固定版本 lazy.nvim bootstrap、锁定插件恢复和版本库功能 |
 | `zsh` | 核心 | `vim.opt.shell` 的固定值，也是 ToggleTerm 和 `:!` 命令的 shell；缺失时 shell 功能失败 |
 | 网络与 TLS 证书 | 功能必需 | 首次 Lazy bootstrap/插件恢复、Mason 和 Tree-sitter 下载；稳定离线编辑不应持续依赖网络 |
@@ -33,27 +33,16 @@
 lazy.nvim、Mason 和 Tree-sitter 的成功安装不能从仓库文件存在推断，必须在目标机器检查。锁文件不锁
 Mason package 或 parser；旧 Packer `site/pack/packer/start` 目录也必须移出活动路径，避免绕过版本门槛。
 
-## 插件能力门槛
-
-| 能力 | 最低 Neovim | 旧版行为 |
-| --- | --- | --- |
-| 基础编辑、Mason UI、Conform、NvimTree、Gitsigns、cmp、ToggleTerm | 0.10 | 目标兼容面；每次更新锁文件后重新验证 |
-| nvim-lspconfig + Mason-LSPConfig | 0.11.3 | provider、配置和对应 buffer-local 按键不加载 |
-| Telescope + file-browser | 0.11.7 | provider 和对应仓库按键不加载 |
-| nvim-treesitter `main` + Textobjects | 0.12.0 | 不加载插件、parser 配置及 `af`/`if` 映射 |
-
-门槛以仓库锁定的 plugin commit 为对象，不是对未来所有上游版本的永久保证。
-
 ## 语言工具链
 
-| 语言键 | 状态 | LSP | Formatter | 其他要求 |
-| --- | --- | --- | --- | --- |
-| `lua` | 启用 | Mason `lua-language-server`（配置名 `lua_ls`） | `stylua`，可由 Mason 提供 | `lua` Tree-sitter parser |
-| `c` | 启用 | Mason 或系统 `clangd` | `clang-format`（Conform 名 `clang_format`）；当前 Mason `clangd` 包不自动等价于该命令 | C 编译工具链用于 parser/原生构建路径 |
-| `elisp` | 启用 | 无 | 无 | `commonlisp` parser；`.el` 与 `.emacs` 使用 `lisp` filetype |
-| `go` | 禁用 | 启用后需要 `gopls` | 启用后需要 Go 工具链的 `gofmt` | 启用后需要 Go parser family；Go 本身不是当前核心依赖 |
+语言启用状态和用户行为见 [`../guide/languages.md`](../guide/languages.md)。依赖层只定义 provider：
 
-改变状态时必须同步 `lua/darkroam/languages.lua`、架构、插件行为、用户指南和检查结果。
+| 工具链 | LSP | Formatter | 其他要求 |
+| --- | --- | --- | --- |
+| Lua | Mason `lua-language-server`（配置名 `lua_ls`） | `stylua`，可由 Mason 提供 | `lua` Tree-sitter parser |
+| C | Mason 或系统 `clangd` | 独立 `clang-format`（Conform 名 `clang_format`） | C 编译工具链和 `c` parser |
+| Emacs Lisp | 无 | 无 | `commonlisp` parser；`.el` 与 `.emacs` 使用 `lisp` filetype |
+| Go（开关启用时） | `gopls` | Go 工具链的 `gofmt` | Go parser family；Go 不是当前核心依赖 |
 
 ## 搜索、项目和 Git 功能
 

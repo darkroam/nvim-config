@@ -1,7 +1,21 @@
 # 维护历史
 
-本文件只记录已经完成并验证的项目。活动和挂起工作分别见 [`todo.md`](todo.md) 与
-[`suspended.md`](suspended.md)。
+本文件只记录已经完成并验证的重要项目，不复制原始日志或逐 commit 流水账。待办和有恢复条件的暂缓
+工作统一见 [`roadmap.md`](roadmap.md)。
+
+## 2026-07-18：个人配置文档重组
+
+- [x] 对比 rafi/vim-config、jdhao/nvim-config、brainfucksec/neovim-lua、ayamir/nvimdots 和
+  ThePrimeagen/init.lua，按确认选择采用面向未来自己和自动化代理的分层任务式文档。
+- [x] 将文档重组为 `guide / reference / maintenance`，新增纯净安装、语言能力和单一兼容矩阵入口；
+  README 保持简短导航，全部项目文档继续随 Git clone 离线可用。
+- [x] 将 TODO 与暂缓状态合并到 roadmap，将方案模板合入 workflow；审计中的当前事实迁入权威文档，
+  不再长期保存原始审计流水。
+- [x] 更新 `scripts/check-docs.py`，在原有链接、Lua 所有权和 Lazy lock 检查上增加兼容门槛、单一语言
+  表、静态自定义按键、维护状态和旧路径检查。
+- [x] 文档合同和 whitespace 检查通过；隔离 state/cache/log 的 0.12.3 与 0.10.4 headless 启动输出
+  分别确认完整能力开启和三项版本门槛关闭，没有 Neovim 配置错误。
+- [x] 纯净 clone 全流程和 `:DarkroamBootstrap` 实现没有混入本次文档变更，继续由 roadmap 跟踪。
 
 ## 2026-07-17：Lazy、Neovim 0.12 与旧版降级兼容
 
@@ -48,8 +62,8 @@
 - [x] 建立 `scripts/check-docs.py`，关联必需文档、内部链接、tracked Lua、Packer 声明和语言状态。
 - [x] 文档检查、检查器 Python 编译、39 个 Lua 文件解析和 staged whitespace 检查通过；真实配置
   headless 启动的既有 0.10/0.11 错误与审计记录一致，未被误记为成功。
-- [x] 当前运行缺陷没有被文档工作静默修复；Neovim 0.10/0.11 冲突、插件无锁、遗留 provider、
-  固定 `fish` 和 autocommand 风险均保留为活动 TODO。
+- [x] 当时发现的运行缺陷没有被文档工作静默修复；后续 Lazy、Zsh 和兼容性修改均通过独立方案完成，
+  其余事项继续由 roadmap 跟踪。
 
 ## 2026-06-25：近期代码整理
 

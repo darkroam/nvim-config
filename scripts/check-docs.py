@@ -16,27 +16,60 @@ ROOT = Path(__file__).resolve().parents[1]
 REQUIRED_DOCS = (
     "AGENTS.md",
     "README.md",
-    "docs/project/architecture.md",
-    "docs/project/dependencies.md",
-    "docs/project/plugins.md",
-    "docs/project/maintenance-policy.md",
-    "docs/planning/repository-audit.md",
-    "docs/planning/change-template.md",
-    "docs/planning/todo.md",
-    "docs/planning/suspended.md",
-    "docs/planning/history.md",
-    "docs/user/usage-zh.md",
-    "docs/user/keybindings-zh.md",
+    "docs/guide/installation.md",
+    "docs/guide/usage.md",
+    "docs/guide/languages.md",
+    "docs/guide/keymaps.md",
+    "docs/reference/architecture.md",
+    "docs/reference/compatibility.md",
+    "docs/reference/dependencies.md",
+    "docs/reference/plugins.md",
+    "docs/maintenance/workflow.md",
+    "docs/maintenance/roadmap.md",
+    "docs/maintenance/history.md",
 )
 
 README_NAV_TARGETS = tuple(path for path in REQUIRED_DOCS if path != "README.md")
+OWNER_DOCS = (
+    "docs/guide/languages.md",
+    "docs/guide/keymaps.md",
+    "docs/reference/architecture.md",
+    "docs/reference/plugins.md",
+)
+LEGACY_DOC_PATHS = (
+    "docs/project/",
+    "docs/planning/",
+    "docs/user/",
+    "../project/",
+    "../planning/",
+    "../user/",
+    "maintenance-policy.md",
+    "change-template.md",
+    "repository-audit.md",
+    "usage-zh.md",
+    "keybindings-zh.md",
+    "suspended.md",
+    "todo.md",
+)
 
 LINK_RE = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
 LAZY_PLUGIN_RE = re.compile(r'["\']([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)["\']')
 COMMIT_RE = re.compile(r"^[0-9a-f]{40}$")
 LAZY_COMMIT_RE = re.compile(r'^local lazy_commit = "([0-9a-f]{40})"$', re.MULTILINE)
 LANGUAGE_ENTRY_RE = re.compile(r"^\s*([a-z][a-z0-9_]*)\s*=\s*(true|false)\s*,?\s*$")
+COMPAT_ENTRY_RE = re.compile(
+    r"^\s*([a-z][a-z0-9_]*)\s*=\s*\{\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\}\s*,?\s*$"
+)
 ABSOLUTE_HOME_RE = re.compile(r"/(?:home|Users)/[^/\s`]+/")
+CORE_KEYMAP_RE = re.compile(r'^\s*keymap\([^,]+,\s*"([^"]+)"')
+LSP_KEYMAP_RE = re.compile(r'^\s*map\("([^"]+)"')
+VIM_KEYMAP_RE = re.compile(r'vim\.keymap\.set\(\s*"[^"]+"\s*,\s*"([^"]+)"')
+VIM_TABLE_KEYMAP_RE = re.compile(r'vim\.keymap\.set\(\s*\{[^}]+\}\s*,\s*"([^"]+)"')
+CMP_KEYMAP_RE = re.compile(r'^\s*\["([^"]+)"\]\s*=\s*cmp\.mapping')
+TABLE_KEYMAP_RE = re.compile(r'^\s*\["([^"]+)"\]\s*=')
+TELESCOPE_BARE_KEYMAP_RE = re.compile(r"^\s*(q|N|h)\s*=")
+OPTION_KEYMAP_RE = re.compile(r'^\s*(?:line|above|eol|map)\s*=\s*"([^"]+)"')
+LAZY_KEY_RE = re.compile(r'^\s*\{\s*"([^"]+)"')
 
 
 def read(relative: str) -> str:
@@ -100,16 +133,16 @@ def check_markdown_links(errors: list[str]) -> None:
                 errors.append(f"broken internal link: {relative} -> {target}")
 
 
+def check_legacy_paths(errors: list[str]) -> None:
+    for relative in REQUIRED_DOCS:
+        content = read(relative)
+        for legacy in LEGACY_DOC_PATHS:
+            if legacy in content:
+                errors.append(f"legacy documentation path in {relative}: {legacy}")
+
+
 def check_source_ownership(errors: list[str]) -> None:
-    owner_text = "\n".join(
-        read(relative)
-        for relative in (
-            "docs/project/architecture.md",
-            "docs/project/plugins.md",
-            "docs/user/usage-zh.md",
-            "docs/user/keybindings-zh.md",
-        )
-    )
+    owner_text = "\n".join(read(relative) for relative in OWNER_DOCS)
     for relative in git_lines(
         "ls-files", "--cached", "--others", "--exclude-standard", "--", "*.lua"
     ):
@@ -124,7 +157,7 @@ def check_lazy_inventory(errors: list[str]) -> None:
         for path in spec_paths
         for plugin in LAZY_PLUGIN_RE.findall(path.read_text(encoding="utf-8-sig"))
     }
-    inventory = read("docs/project/plugins.md")
+    inventory = read("docs/reference/plugins.md")
     if not declarations:
         errors.append("no Lazy declarations parsed from lua/darkroam/plugins/*.lua")
         return
@@ -161,55 +194,122 @@ def check_lazy_inventory(errors: list[str]) -> None:
         errors.append("lazy.nvim bootstrap commit differs from lazy-lock.json")
 
 
-def check_language_tables(errors: list[str]) -> None:
-    languages: dict[str, bool] = {}
+def parse_table_entries(relative: str, opening: str, pattern: re.Pattern[str]) -> dict[str, tuple[str, ...]]:
+    entries: dict[str, tuple[str, ...]] = {}
     in_table = False
-    for line in read("lua/darkroam/languages.lua").splitlines():
-        if line.strip() == "M.syntax = {":
+    for line in read(relative).splitlines():
+        if line.strip() == opening:
             in_table = True
             continue
         if in_table and line.strip() == "}":
             break
         if in_table:
-            match = LANGUAGE_ENTRY_RE.match(line)
+            match = pattern.match(line)
             if match:
-                languages[match.group(1)] = match.group(2) == "true"
+                entries[match.group(1)] = match.groups()[1:]
+    return entries
 
-    if not languages:
+
+def check_language_table(errors: list[str]) -> None:
+    entries = parse_table_entries(
+        "lua/darkroam/languages.lua", "M.syntax = {", LANGUAGE_ENTRY_RE
+    )
+    if not entries:
         errors.append("no language switches parsed from lua/darkroam/languages.lua")
         return
+    content = read("docs/guide/languages.md")
+    for language, values in sorted(entries.items()):
+        state = "启用" if values[0] == "true" else "禁用"
+        expected = f"| `{language}` | {state} |"
+        if expected not in content:
+            errors.append(f"language table mismatch: expected row prefix {expected}")
+
+
+def check_compatibility_table(errors: list[str]) -> None:
+    entries = parse_table_entries(
+        "lua/darkroam/compat.lua", "local minimum = {", COMPAT_ENTRY_RE
+    )
+    if not entries:
+        errors.append("no compatibility gates parsed from lua/darkroam/compat.lua")
+        return
+    content = read("docs/reference/compatibility.md")
+    for feature, version in sorted(entries.items()):
+        expected = f"| `{feature}` | `{'.'.join(version)}` |"
+        if expected not in content:
+            errors.append(f"compatibility table mismatch: expected row prefix {expected}")
+
+
+def extract_lazy_keys(path: Path) -> set[str]:
+    keys: set[str] = set()
+    in_keys = False
+    depth = 0
+    for line in path.read_text(encoding="utf-8-sig").splitlines():
+        if not in_keys and re.search(r"\bkeys\s*=\s*\{", line):
+            in_keys = True
+            depth = line.count("{") - line.count("}")
+            continue
+        if not in_keys:
+            continue
+        match = LAZY_KEY_RE.match(line)
+        if match:
+            keys.add(match.group(1))
+        depth += line.count("{") - line.count("}")
+        if depth <= 0:
+            in_keys = False
+    return keys
+
+
+def normalize_key(key: str) -> str:
+    return key.replace("<leader>", ",")
+
+
+def check_custom_keymaps(errors: list[str]) -> None:
+    keys: set[str] = set()
+    core = read("lua/darkroam/keymaps.lua")
+    keys.update(CORE_KEYMAP_RE.findall(core))
+
+    lsp = read("lua/darkroam/plugins/lsp.lua")
+    keys.update(LSP_KEYMAP_RE.findall(lsp))
 
     for relative in (
-        "docs/project/architecture.md",
-        "docs/project/dependencies.md",
-        "docs/user/usage-zh.md",
+        "lua/darkroam/plugins/ui.lua",
+        "lua/darkroam/plugins/treesitter.lua",
     ):
         content = read(relative)
-        for language, enabled in sorted(languages.items()):
-            state = "启用" if enabled else "禁用"
-            expected = f"| `{language}` | {state} |"
-            if expected not in content:
-                errors.append(
-                    f"language table mismatch in {relative}: expected row prefix {expected}"
-                )
+        keys.update(VIM_KEYMAP_RE.findall(content))
+        keys.update(VIM_TABLE_KEYMAP_RE.findall(content))
+
+    completion = read("lua/darkroam/plugins/completion.lua")
+    keys.update(CMP_KEYMAP_RE.findall(completion))
+    keys.update(OPTION_KEYMAP_RE.findall(read("lua/darkroam/plugins/editor.lua")))
+
+    telescope = read("lua/darkroam/plugins/telescope.lua")
+    keys.update(TABLE_KEYMAP_RE.findall(telescope))
+    keys.update(TELESCOPE_BARE_KEYMAP_RE.findall(telescope))
+
+    for path in sorted((ROOT / "lua/darkroam/plugins").glob("*.lua")):
+        keys.update(extract_lazy_keys(path))
+
+    documented = read("docs/guide/keymaps.md")
+    for key in sorted(normalize_key(key) for key in keys):
+        if f"`{key}`" not in documented:
+            errors.append(f"custom keymap missing from guide: {key}")
 
 
-def check_planning_roles(errors: list[str]) -> None:
-    todo = read("docs/planning/todo.md")
-    suspended = read("docs/planning/suspended.md")
-    history = read("docs/planning/history.md")
-    if re.search(r"^- \[[xX]\]", todo, re.MULTILINE):
-        errors.append("todo.md contains completed checklist items")
-    if re.search(r"^- \[[xX]\]", suspended, re.MULTILINE):
-        errors.append("suspended.md contains completed checklist items")
+def check_maintenance_roles(errors: list[str]) -> None:
+    roadmap = read("docs/maintenance/roadmap.md")
+    history = read("docs/maintenance/history.md")
+    if re.search(r"^- \[[xX]\]", roadmap, re.MULTILINE):
+        errors.append("roadmap.md contains completed checklist items")
     if re.search(r"^- \[ \]", history, re.MULTILINE):
-        errors.append("history.md contains open checklist items")
+        errors.append("history.md contains incomplete checklist items")
+    if "## 暂缓" not in roadmap:
+        errors.append("roadmap.md has no deferred-work section")
 
 
 def check_portability(errors: list[str]) -> None:
     for relative in REQUIRED_DOCS:
-        path = ROOT / relative
-        if path.is_file() and ABSOLUTE_HOME_RE.search(read(relative)):
+        if ABSOLUTE_HOME_RE.search(read(relative)):
             errors.append(f"machine-specific absolute home path in {relative}")
 
 
@@ -220,10 +320,13 @@ def main() -> int:
         if not errors:
             check_readme_navigation(errors)
             check_markdown_links(errors)
+            check_legacy_paths(errors)
             check_source_ownership(errors)
             check_lazy_inventory(errors)
-            check_language_tables(errors)
-            check_planning_roles(errors)
+            check_language_table(errors)
+            check_compatibility_table(errors)
+            check_custom_keymaps(errors)
+            check_maintenance_roles(errors)
             check_portability(errors)
     except (OSError, RuntimeError, UnicodeError) as exc:
         errors.append(f"checker failed: {exc}")
@@ -235,8 +338,9 @@ def main() -> int:
         return 1
 
     print(
-        "documentation check passed: required files, navigation, links, source "
-        "ownership, Lazy inventory/lockfile, language tables, planning roles, portability"
+        "documentation check passed: structure, navigation, links, source ownership, "
+        "Lazy inventory/lockfile, compatibility gates, language state, custom keymaps, "
+        "maintenance roles, and portability"
     )
     return 0
 

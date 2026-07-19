@@ -3,6 +3,21 @@
 本文件只记录已经完成并验证的重要项目，不复制原始日志或逐 commit 流水账。待办和有恢复条件的暂缓
 工作统一见 [`roadmap.md`](roadmap.md)。
 
+## 2026-07-19：建立 Lazy 季度更新政策
+
+- [x] 审计现有自动化：文档检查已保证 32 个 spec、branch、40 位 commit 及 lazy.nvim 双 pin 一致；
+  兼容驱动器在矩阵前拒绝缺失、HEAD 偏离或 tracked dirty 的 checkout；Lazy 自动 checker 保持关闭。
+- [x] 当前基线为 manager `306a0552`（2025-12-17）和 32 条 lock；关键插件提交日期分布并不一致，
+  因此 commit 年龄只触发审查，不能自动证明需要更新或授权联网操作。
+- [x] 设定每年 1/4/7/10 月最多一轮、可跳过的审查窗口，以及安全、Neovim 升级、上游故障的紧急
+  入口；每轮仍须先提交准确范围并获得确认，日常启动、安装和故障恢复都不得运行无审查 update。
+- [x] manager pin 与 lockfile 的 `lazy.nvim` 条目作为原子状态单独处理；普通插件按功能组和明确名单使用
+  `:Lazy update [plugins]`。新 lock 只在隔离 worktree/XDG 中生成，并须经过 restore、32 checkout 审计、
+  四版本矩阵、受影响专项验证和可审计提交。
+- [x] 规定任何隐藏错误、build/门槛/专项失败都拒绝新版本；回退 Git commit 后使用 `:Lazy restore`
+  恢复完整旧 lock，禁止手工拼接 checkout。本次为纯文档政策，没有 fetch、update、restore、网络、
+  manager pin、lockfile 或 machine-local checkout 变更；最近通过的 32/32 与四版本矩阵作为建策基线。
+
 ## 2026-07-19：建立 tracked Lua 格式基线
 
 - [x] 审计 18 个 tracked Lua：当前没有 UTF-8 BOM 或 CRLF，17 个已符合 StyLua 2.5.2；唯一内容差异是

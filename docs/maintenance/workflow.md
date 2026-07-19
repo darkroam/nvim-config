@@ -71,6 +71,35 @@
 - 新增 tracked Lua 文件时，在架构、插件或用户文档中建立明确归属；
 - 删除文件时，先迁移所有链接、require、按键、清单和 roadmap 引用。
 
+## 插件更新周期
+
+插件和 manager 使用季度审查窗口：每年 1、4、7、10 月最多发起一轮；窗口可以跳过，不会自动运行，
+也不构成修改或联网授权。安全问题、目标 Neovim 升级、上游兼容故障或已确认 bug 可以单独提出紧急
+方案，但仍遵循完整确认门禁。日常启动的 Lazy checker 保持关闭，安装恢复只使用 `:Lazy restore`。
+
+每轮更新先在旧 lock 上确认工作树干净、文档/Lua 检查和当前兼容矩阵基线，再提交列出目标 manager
+commit、插件名单、预期 branch、相关 upstream 变更、网络步骤、文档影响和专项验证的方案。获批后使用
+独立 worktree 或 clone，以及隔离的 `HOME`、XDG config/data/state/cache/runtime；日常 data 不能作为
+生成或验收新 lock 的环境。
+
+manager 与普通插件分阶段处理：
+
+1. manager 阶段先审阅准确 commit range，只选择一个完整 commit；同步修改 `lazy.lua` 的
+   `lazy_commit` 和 `lazy-lock.json` 的 `lazy.nvim` 条目，两者不一致即失败。该阶段单独验证并形成可回退
+   commit，不用无范围 `:Lazy update` 顺带更新其他插件；
+2. 普通插件按 UI/editor、completion/LSP/Mason/formatter、search、Tree-sitter 等功能组拆批。只对方案
+   中明确列出的名字执行 `:Lazy update [plugins]`，每批审阅 lock diff；出现未列出的插件、branch 变化、
+   意外删除/新增或运行配置需求时停止并重新确认；
+3. 用新 lock 在隔离 data 执行 `:Lazy restore`，检查 Lazy task/build、lockfile 声明的全部 checkout
+   （当前 32 个）的 HEAD 和 tracked clean 状态，再运行四版本矩阵。manager、build hook 或门槛变化
+   至少补做 0.12.3 完整路径和 0.10.4 基础路径的 clean restore；受影响的 LSP、formatter、parser、
+   搜索或 UI 还要做真实专项验证。
+
+退出码为零但输出或日志含 Neovim/provider 错误、checkout 与 lock 不符、build 失败、旧版门槛回归、
+专项行为失败或文档无法准确描述时均不得接受新版本。回退时恢复该批之前的 Git commit，并在受影响的
+隔离或日常 data 执行 `:Lazy restore` 回到旧 lock；不要手工 checkout 若干目录制造混合状态。每批只在
+全部检查通过后提交，push 仍需额外授权。
+
 ## 验证标准
 
 每次变更至少执行：

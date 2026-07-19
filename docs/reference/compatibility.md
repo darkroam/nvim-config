@@ -144,3 +144,6 @@ clean pass。
 error 都表示未通过。语言 server 自身日志里的已知提示也必须检查、解释并跟踪，不能静默忽略。
 修改 `compat.lua`、Lazy spec 或 `lazy-lock.json` 时，除文档合同检查外还应对所有可取得的目标二进制
 运行自动矩阵；缺少某一二进制或完整 data 时必须明确记录未运行，不能把其他 case 的成功外推过去。
+manager commit 或任一 lock 条目变化后，旧 commit 组合的实测状态不能自动继承；新组合必须先在隔离
+data 完成 restore，再重跑四版本矩阵，并按受影响功能补做真实验证。更新节奏、拆批和回退由
+[`../maintenance/workflow.md`](../maintenance/workflow.md#插件更新周期) 统一规定。

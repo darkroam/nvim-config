@@ -164,6 +164,23 @@ if profile.lsp then
 	end
 end
 
+local original_buffer = vim.api.nvim_get_current_buf()
+local options_buffer = vim.api.nvim_create_buf(false, true)
+local options_ok, options_err = pcall(function()
+	vim.api.nvim_set_current_buf(options_buffer)
+	vim.cmd("setfiletype sh")
+	local formatoptions = vim.bo.formatoptions
+	for _, flag in ipairs({ "1", "c", "r", "o" }) do
+		check(not formatoptions:find(flag, 1, true), "formatoptions-disabled:" .. flag, formatoptions)
+	end
+	for _, flag in ipairs({ "j", "l", "q" }) do
+		check(formatoptions:find(flag, 1, true) ~= nil, "formatoptions-preserved:" .. flag, formatoptions)
+	end
+end)
+vim.api.nvim_set_current_buf(original_buffer)
+vim.api.nvim_buf_delete(options_buffer, { force = true })
+check(options_ok, "formatoptions-buffer", options_err)
+
 local bootstrap = require("darkroam.bootstrap")
 local bootstrap_plan = bootstrap.plan()
 check(command_exists("DarkroamBootstrap"), "command:DarkroamBootstrap")

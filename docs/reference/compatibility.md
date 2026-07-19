@@ -26,6 +26,12 @@
 “禁用”表示对应插件不进入 runtimepath、配置不执行、仓库为该插件声明的按键不创建。它不表示 data
 目录中一定没有旧 checkout；判断活动能力必须同时检查版本、Lazy spec 和 runtimepath。
 
+基础编辑行为在所有档位使用同一策略：每次 FileType 后删除 buffer-local `formatoptions` 的 `c`、`r`、
+`o`，不让语言 ftplugin 恢复自动注释换行或续写；其他 flag 仍由各版本、各 filetype 决定。0.10.4、
+0.11.3、0.11.7、0.12.3 均已用 Lua/C/Markdown buffer 验证最终值不含 `1/c/r/o`，Enter 与 `o` 不复制
+leader，C 块注释不插入 `*`；0.10/0.11 的普通 `smartindent` 空格继续保留。最终离线矩阵仍通过
+25/27/30/32 个活动 spec，专用日志为空。
+
 ## 功能门槛
 
 下表必须与 `lua/darkroam/compat.lua` 的 `minimum` 表一致：

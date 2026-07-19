@@ -3,6 +3,20 @@
 本文件只记录已经完成并验证的重要项目，不复制原始日志或逐 commit 流水账。待办和有恢复条件的暂缓
 工作统一见 [`roadmap.md`](roadmap.md)。
 
+## 2026-07-19：关闭自动注释续写
+
+- [x] 定界原配置的两处错误：给 flag 字符串 `formatoptions:append()` 传 `{ "r" }` 没有加入 `r`，而是
+  意外加入合法的 `1`；`formatoptions-=cro` 只尝试删除连续片段，不能分别删除三个 flag，因此 TODO
+  后的 Lua/C ftplugin 仍恢复 `c/r/o`。
+- [x] 按确认目标删除两条矛盾设置，先从继承值正确移除 `c/r/o`，再由 `DarkroamOptions` 的 FileType
+  autocommand 清理 buffer-local 值；保留上游 `q/j/l/n/t` 等其他 flag、Comment.nvim 手动注释和普通
+  `smartindent`。
+- [x] 四版本 smoke 使用 `sh` ftplugin 验证执行顺序：其上游 `croql` 最终稳定为 `q/j/l`，且没有意外
+  `1`。完整离线矩阵继续通过 25/27/30/32 个活动 spec，四份专用日志为空。
+- [x] 0.10.4、0.11.3、0.11.7、0.12.3 使用最终仓库配置实际编辑 Lua/C/Markdown buffer；Enter 和
+  `o` 均不复制 leader，C 块注释不插入 `*`。0.10/0.11 仍出现的三个普通缩进空格来自
+  `smartindent`，不是注释续写；探针没有 Neovim 或 provider 错误。
+
 ## 2026-07-19：clangd 标准位置编码协商
 
 - [x] 确认锁定的 nvim-lspconfig 会在 resolved clangd config 中加入旧 `offsetEncoding`，而

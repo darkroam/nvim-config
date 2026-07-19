@@ -65,6 +65,11 @@ init.lua
 `darkroam.bootstrap.setup()` 只依赖核心兼容/语言表，注册 `:DarkroamBootstrap` 和 `VimLeavePre` guard，
 不加载 provider 或访问网络。它位于 Lazy 前，使 guard 的执行顺序早于 Mason terminator。
 
+`darkroam.options` 先清理当前和新 buffer 继承的自动注释 `formatoptions`，再用 `FileType` autocommand 在
+内置 ftplugin 之后删除 buffer-local `c`、`r`、`o`。必须在 FileType 边界重复处理，因为 Lua、C 等
+ftplugin 会重新加入这些 flag；不能把 `cro` 作为一个连续字符串删除，也不能给 flag option 的
+`append()` 传 Lua list。其他 filetype-local flag 保持上游值。
+
 Lazy 重置 runtimepath 前会探测 Neovim 自带 `parser/lua.so` 的非 data runtime 根并显式保留，避免发行版
 把 parser 放在不同 lib 目录时丢失内置 parser。降级档位还会移除公共 `data/site`，防止读取旧 Packer
 start package 或不兼容 parser；原因和准确版本边界见兼容性文档。

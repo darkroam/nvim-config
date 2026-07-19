@@ -28,6 +28,13 @@ NvimTree 适合持续浏览文件树。支持 Telescope 的档位还提供：
 配置不会随项目自动改变工作目录；需要时使用 `,cd` 切换到当前文件目录。Telescope file browser 与
 NvimTree 是两个独立入口。
 
+## 注释续写
+
+仓库在每个 filetype 的内置 ftplugin 完成后移除 `formatoptions` 的 `c`、`r`、`o`：注释不会因
+`textwidth` 自动换行，Insert mode 按 Enter 或 Normal mode 使用 `o`/`O` 时也不会自动复制注释 leader；
+C 块注释不会自动插入下一行的 `*`，但 `smartindent` 仍可能保留普通缩进。语言 ftplugin 的 `q`、`j`、
+`l` 等其他行为保持不变，手工注释继续使用 Comment.nvim 按键，见 [`keymaps.md`](keymaps.md)。
+
 ## 补全、snippet 和格式化
 
 进入 Insert mode 后加载 nvim-cmp、LuaSnip 和 autopairs：

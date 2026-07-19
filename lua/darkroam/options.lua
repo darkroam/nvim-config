@@ -2,8 +2,8 @@
 vim.opt.path:append({ "**" }) -- Finding files - Search down into subfolders
 vim.opt.wildignore:append({ "*/node_modules/*" })
 vim.opt.shortmess:append("c")
--- Add asterisks in block comments
-vim.opt.formatoptions:append({ "r" })
+local automatic_comment_formatoptions = { "c", "r", "o" }
+vim.opt.formatoptions:remove(automatic_comment_formatoptions)
 
 local options = {
 	-- title = true,
@@ -62,15 +62,23 @@ end
 
 vim.cmd("set whichwrap+=<,>,[,],h,l")
 vim.cmd([[set iskeyword+=-]])
-vim.cmd([[set formatoptions-=cro]]) -- TODO: this doesn't seem to work
 
 -- Undercurl
 vim.cmd([[let &t_Cs = "\e[4:3m"]])
 vim.cmd([[let &t_Ce = "\e[4:0m"]])
 
--- Turn off paste mode when leaving insert
 local options_group = vim.api.nvim_create_augroup("DarkroamOptions", { clear = true })
 
+-- Filetype plugins may restore automatic comment wrapping and continuation.
+vim.api.nvim_create_autocmd("FileType", {
+	group = options_group,
+	pattern = "*",
+	callback = function()
+		vim.opt_local.formatoptions:remove(automatic_comment_formatoptions)
+	end,
+})
+
+-- Turn off paste mode when leaving insert
 vim.api.nvim_create_autocmd("InsertLeave", {
 	group = options_group,
 	pattern = "*",

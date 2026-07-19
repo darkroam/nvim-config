@@ -3,11 +3,6 @@
 本文只保存尚未完成的工作。`[ ]` 表示待办；暂缓项必须给出恢复条件。优先级描述风险，不代表自动
 授权，任何实现仍需按 [`workflow.md`](workflow.md) 单独提交方案并获得确认。
 
-## P1：编辑行为
-
-- [ ] 审查 ToggleTerm 中没有仓库按键的 Lazygit、Node、ncdu、htop、Python helper，确认保留、改为
-  user command、增加按键或删除，并处理 `python` 与 `python3` 命令差异。
-
 ## P2：维护体验
 
 - [ ] 建立一致的 Lua 格式化基线，消除历史 UTF-8 BOM 和风格差异；无 formatter 时不得声称全库

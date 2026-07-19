@@ -151,31 +151,6 @@ return {
 					vim.keymap.set("t", "<C-l>", [[<Cmd>wincmd l<CR>]], opts)
 				end,
 			})
-
-			local Terminal = require("toggleterm.terminal").Terminal
-			local terminals = {
-				lazygit = Terminal:new({ cmd = "lazygit", hidden = true }),
-				node = Terminal:new({ cmd = "node", hidden = true }),
-				ncdu = Terminal:new({ cmd = "ncdu", hidden = true }),
-				htop = Terminal:new({ cmd = "htop", hidden = true }),
-				python = Terminal:new({ cmd = "python", hidden = true }),
-			}
-
-			function _G._LAZYGIT_TOGGLE()
-				terminals.lazygit:toggle()
-			end
-			function _G._NODE_TOGGLE()
-				terminals.node:toggle()
-			end
-			function _G._NCDU_TOGGLE()
-				terminals.ncdu:toggle()
-			end
-			function _G._HTOP_TOGGLE()
-				terminals.htop:toggle()
-			end
-			function _G._PYTHON_TOGGLE()
-				terminals.python:toggle()
-			end
 		end,
 	},
 	{

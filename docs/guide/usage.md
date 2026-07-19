@@ -69,8 +69,10 @@ git.nvim 或 Fugitive，也没有为它们保留失效按键。不要依靠 data
 
 ## 终端与外部命令
 
-`:!` 和 ToggleTerm 使用配置中的 `zsh`。ToggleTerm 还定义 Lazygit、Node、ncdu、htop 和 Python 的
-Lua helper，但当前没有仓库按键；缺少这些可选命令不影响普通终端。
+`:!` 和 ToggleTerm 使用配置中的 `zsh`；`,xc` 切换普通浮动终端。需要偶尔在新 terminal 中执行外部
+命令时使用 ToggleTerm 原生入口，例如 `:TermExec cmd="lazygit"`，其中 `cmd` 必须加引号。仓库不为
+Lazygit、Node、ncdu、htop 或 Python 创建专用 helper、命令或按键，也不把它们列为 ToggleTerm 依赖；
+执行前由用户确认实际命令名和 PATH，例如系统只有 `python3` 时就显式使用 `cmd="python3"`。
 
 ## 常见故障
 

@@ -211,6 +211,10 @@ check(plugin_loaded("nvim-treesitter") == profile.treesitter, "startup-load:nvim
 
 trigger("NvimTreeOpen", "nvim-tree.lua", "NvimTreeClose")
 trigger("ToggleTerm", "toggleterm.nvim", "ToggleTerm")
+check(command_exists("TermExec"), "command:TermExec")
+for _, name in ipairs({ "_LAZYGIT_TOGGLE", "_NODE_TOGGLE", "_NCDU_TOGGLE", "_HTOP_TOGGLE", "_PYTHON_TOGGLE" }) do
+	check(_G[name] == nil, "terminal-helper-absent:" .. name, type(_G[name]))
+end
 trigger("ZenMode", "zen-mode.nvim", "ZenMode")
 
 if profile.telescope then

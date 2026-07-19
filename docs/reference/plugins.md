@@ -53,9 +53,9 @@ Comment.nvim 的 toggler 与 opleader 不再复用同一完整键串，避免 op
 | `tjdevries/colorbuddy.nvim` | 依赖；基础档位 | Neosolarized 配置依赖 |
 | `nvim-lualine/lualine.nvim` | 活动；基础档位 | mode、branch、diff、诊断、文件、位置；不再请求缺失的 Fugitive extension |
 
-ToggleTerm 仍继承 `vim.o.shell` 的 Zsh。Lazygit、Node、ncdu、htop、Python 自定义 terminal helper 暂时
-保留且没有仓库按键；它们只在 ToggleTerm 已加载后存在，外部命令边界见
-[`dependencies.md`](dependencies.md)。
+ToggleTerm 仍继承 `vim.o.shell` 的 Zsh，保留 `,xc`、`:ToggleTerm` 和原生 `:TermExec`。仓库不创建
+Lazygit、Node、ncdu、htop、Python 的 Terminal 对象、全局 Lua helper、专用命令或按键；临时外部命令
+由用户显式传给 `:TermExec cmd="..."`，依赖边界见 [`dependencies.md`](dependencies.md)。
 
 发布修复 `03ea599` 后的 GitHub clean clone 已在 Neovim 0.12.3 和 0.10.4 分别通过
 `:NvimTreeOpen`、`:ToggleTerm`、`:ZenMode` 的真实加载与关闭路径，并确认 ToggleTerm 使用 Zsh；

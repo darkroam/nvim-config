@@ -3,6 +3,17 @@
 本文件只记录已经完成并验证的重要项目，不复制原始日志或逐 commit 流水账。待办和有恢复条件的暂缓
 工作统一见 [`roadmap.md`](roadmap.md)。
 
+## 2026-07-19：移除不可达的 ToggleTerm helper
+
+- [x] 确认 Lazygit、Node、ncdu、htop、Python 的五个 Terminal 对象和 `_G` toggle 函数没有仓库按键、
+  user command 或 Lua 调用点，只能在 ToggleTerm 已加载后手工调用全局函数；普通 `,xc` 不消费它们。
+- [x] 当前机器有 `lazygit`、`node`、`htop`、`python3`，没有 `ncdu` 或 `python`；没有用 `python3` 修补
+  一个仍不可发现的 helper，而是删除全部五个对象和全局函数。没有卸载或修改任何系统命令。
+- [x] 保留 `,xc`、`:ToggleTerm`、原生 `:TermExec`、Zsh 和 terminal-local 导航映射；文档将偶发外部
+  命令统一为带引号的 `:TermExec cmd="..."`，不再把任意执行目标误列为仓库依赖。
+- [x] 四版本真实 `:TermExec` 均通过 Lazy stub 加载插件，在 Zsh terminal 收到版本 marker，并确认五个
+  `_G` 名称保持 `nil`。最终矩阵仍通过 25/27/30/32 个活动 spec、ToggleTerm 打开/关闭和空日志检查。
+
 ## 2026-07-19：消除文件树与诊断按键冲突
 
 - [x] 确认 LSP buffer-local `,e` 按 Neovim 规则必然覆盖 Lazy 创建的全局 NvimTree `,e`，导致最常用的

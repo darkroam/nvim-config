@@ -3,6 +3,29 @@
 本文件只记录已经完成并验证的重要项目，不复制原始日志或逐 commit 流水账。待办和有恢复条件的暂缓
 工作统一见 [`roadmap.md`](roadmap.md)。
 
+## 2026-07-19：完成 Neovim 0.12.3 X11/st 交互验收
+
+- [x] 确认默认二进制是 0.12.3，宿主为 Xorg、dwm 和 `st`；`xclip`、`xdotool`、`maim`、Zsh
+  5.9 和 `Maple Mono NF CN` 可用，32/32 个现有 Lazy checkout 与 lockfile commit 一致且 tracked
+  clean。测试只使用临时 state/cache 和编辑目录，没有联网、下载、更新 lock 或修改运行配置。
+- [x] 在真实 `st` 里用实际键盘事件通过 80/80 个全局或插件映射、clangd attach 后的 11/11 个 LSP
+  映射，以及标签页、分屏、目录、Alternate、Comment、Surround、Autopairs 和 Tree-sitter 功能样本；
+  Telescope Normal、file-browser、ToggleTerm buffer-local 清单分别为 2/2、4/4、5/5。
+- [x] NvimTree、全部仓库 Telescope 入口和 file-browser 局部键、Normal/Insert 入口的 ToggleTerm、
+  Zsh 命令、terminal `<Esc>`、clangd definition/hover/诊断浮窗和 Conform C 格式化均由物理送键触发
+  并从同一 Neovim 进程回读成功。最终 `v:errmsg` 与 fatal marker 为空，st/Neovim 都以状态 0 退出。
+- [x] 最终干净运行完成 Neovim→X11 与 X11→Neovim 哨兵传递，并将运行前备份的 4 字节 clipboard
+  逐字节恢复。早期探针错误地同步等待 `xclip` selection owner，首次覆盖前没有持久 hash，因而无法
+  证明整组调试开始前的 clipboard 已恢复；后续探针先写 0600 临时备份、使用非阻塞 owner 并回读。
+  这是临时验证工具的状态事故，不写成配置缺陷，也不虚构最初内容已恢复。
+- [x] 七张窗口截图确认中文宽度、NvimTree/Telescope 文件图标、prompt、Lualine/诊断符号、浮动终端和
+  LSP 边框无方框、截断或明显错位；当前通用 `monospace:size=10` 可通过 Fontconfig fallback 消费
+  已安装的 Nerd Font 字形。
+- [x] 核心 Neovim 日志为空；单次 17,144 字节 LSP log 的 72 条 `[ERROR]` 全是 Neovim 对 clangd
+  stderr `I[...]` 的包装，含无 compilation database 的 fallback、被新编辑取消的旧 semantic-token
+  task 和 status 0 shutdown，没有 traceback、provider 或协议失败。LuaLS 预览临时 Lua 文件时扫描到
+  无关父目录并跳过 659 KB meta 文件的提示作为非阻塞新发现进入 roadmap，不冒充无告警通过。
+
 ## 2026-07-19：建立 Lazy 季度更新政策
 
 - [x] 审计现有自动化：文档检查已保证 32 个 spec、branch、40 位 commit 及 lazy.nvim 双 pin 一致；

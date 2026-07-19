@@ -8,6 +8,20 @@ spec 的 `cond` 成立时创建。准确档位见
 [`../reference/compatibility.md`](../reference/compatibility.md)。表格尽量使用 Lua 配置中的字面键名，
 便于静态检查。
 
+## 交互验收边界
+
+静态文档检查负责核对本表与 Lua 声明，兼容矩阵负责核对各档位实际存在的映射；两者都不能证明终端
+收到了用户按下的字节序列。2026-07-19 在真实 X11 `st` 中使用 Neovim 0.12.3 完成交互样本：最终干净
+运行核对 80/80 个全局或插件映射和 clangd attach 后的 11/11 个 LSP buffer-local 映射，并用实际键盘
+事件触发标签页、分屏、目录、Alternate、Comment、Surround、Autopairs、Tree-sitter、NvimTree、
+Telescope、ToggleTerm、definition、hover、诊断浮窗和格式化。Telescope Normal、file-browser 和
+ToggleTerm buffer-local 映射分别为 2/2、4/4 和 5/5。
+
+全部修改性操作只作用于一次性临时文件；最终 `v:errmsg` 和 fatal marker 为空，LSP stderr 的包装基线
+见兼容性文档。这个结论只覆盖上述
+0.12.3、X11 和 `st` 组合；表中的“活动”仍表示配置会创建映射，不能把同一物理送键结论外推到其他
+版本、终端或平台。
+
 ## 标签页、窗口和 buffer
 
 | 模式 | 按键 | 行为 | 状态 |

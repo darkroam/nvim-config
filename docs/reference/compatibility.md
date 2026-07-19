@@ -17,7 +17,7 @@
 
 | Neovim | 档位 | LSP | Telescope | Tree-sitter | 验证状态 |
 | --- | --- | --- | --- | --- | --- |
-| 0.12.3 | 完整 | 启用 | 启用 | `main` 新 API 与 Textobjects | GitHub `main` 的发布后 clone 已通过隔离首次 Lazy、Mason、parser、插件触发、LuaLS、C/Elisp 和 StyLua 验证；Bootstrap 的既有 4/3 clean 基线、新增 clang-format 独立 clean 安装和当前完整 5/3 幂等验证通过；GUI 仍未完成 |
+| 0.12.3 | 完整 | 启用 | 启用 | `main` 新 API 与 Textobjects | GitHub `main` 的发布后 clone 已通过隔离首次 Lazy、Mason、parser、插件触发、LuaLS、C/Elisp 和 StyLua 验证；Bootstrap 的既有 4/3 clean 基线、新增 clang-format 独立 clean 安装和当前完整 5/3 幂等验证通过；X11 `st` 交互、剪贴板、图标和物理按键样本通过，其他 GUI/终端不外推 |
 | 0.11.7+ | 降级 | 启用 | 启用 | 当前栈禁用 | 0.11.7 已通过隔离首次 Lazy、Mason、LSP、Telescope、基础插件和禁用边界实测；更高 0.11 patch 未逐一实测 |
 | 0.11.3-0.11.6 | 降级 | 启用 | 禁用 | 当前栈禁用 | 下界 0.11.3 已通过隔离首次 Lazy、Mason、LSP、基础插件和禁用边界实测；0.11.4-0.11.6 未逐一实测 |
 | 0.11.0-0.11.2 | 基础 | 禁用 | 禁用 | 当前栈禁用 | 设计目标，尚未取得对应二进制实测 |
@@ -69,8 +69,9 @@ Tree-sitter 已使用 Lazy 标准冒号 build。发布修复 `03ea599` 后，从
 工具、三个 parser、C/Elisp buffer 和活动插件命令。LuaLS 虽自动启动但 180 秒内未完成 initialize，
 后续已定界为受限沙箱无法驱动其内部 worker：无 library 的最小探针仍超时，而同一 package 在沙箱外
 59 ms 完成最小 initialize，真实配置 55 ms 完成 attach 并通过 hover。由此 LuaLS 在 0.12.3 完整档位
-记为已验证，GUI/终端交互仍保持未验证。0.10.4 使用另一套 clean data restore 为 0 task error，LSP、
-Telescope 和 Tree-sitter spec、checkout、命令与按键均保持缺席，基础插件真实命令和 Zsh 路径通过。
+记为已验证；当时尚未覆盖的 GUI/终端交互由下方独立样本补齐。0.10.4 使用另一套 clean data restore
+为 0 task error，LSP、Telescope 和 Tree-sitter spec、checkout、命令与按键均保持缺席，基础插件真实
+命令和 Zsh 路径通过。
 
 0.11 下界使用官方 0.11.3 和 0.11.7 Linux x86_64 发布包、指向 `8289b0f` 的干净配置副本以及各自
 隔离的 XDG data/state/cache 实测。0.11.3 的 27 个 checkout 与 lockfile 一致，LSP 启用而 Telescope
@@ -88,6 +89,31 @@ LSP buffer-local 诊断浮窗已从 `,e` 迁移到 `,df`，使基础档位提供
 保持同一行为。0.10.4 已确认 `,e` 是全局 NvimTree 映射且 `,df` 缺席；0.11.3、0.11.7、0.12.3 均在
 真实 clangd attach 后确认 `,df` 为描述正确的 buffer-local callback、`,e` 仍为全局映射，并从同一 C
 buffer 分别实际打开诊断浮窗和 NvimTree。四档的 Neovim 内置 `<C-w>d` 均保留，最终离线矩阵继续通过。
+
+## GUI 与交互验证边界
+
+2026-07-19 使用真实 X11 `st`、Neovim 0.12.3、临时 state/cache 和编辑目录完成交互样本；配置读取
+当前仓库，启动前核对 32/32 个现有 checkout 与 lockfile 一致，没有下载、更新或修改 plugin data。
+最终干净运行通过 80/80 个全局或插件映射、11/11 个 clangd buffer-local 映射、Telescope Normal 2/2、
+file-browser 4/4 和 ToggleTerm buffer-local 5/5；实际键盘事件还触发 NvimTree、全部仓库 Telescope
+入口、ToggleTerm/Zsh、clangd definition/hover/诊断浮窗和 Conform C 格式化。双向 X11 clipboard 哨兵
+通过，运行前保存的 4 字节内容在结束时逐字节恢复。
+
+七张目标窗口截图显示 Neosolarized、NvimTree、Telescope、ToggleTerm、Lualine、中文、Web-devicons、
+prompt/诊断符号和 LSP 浮窗边框均无方框、截断或明显错位。核心 `NVIM_LOG_FILE` 为空，最终
+`v:errmsg`、Neovim messages 的 error marker 和 fatal marker 为空。单次 LSP log 为 17,144 字节；
+Neovim 把 clangd 写到 stderr 的 `I[...]` 协议信息统一包装为 72 条 `[ERROR]`，内容包括临时 C 文件
+无 compilation database 后使用 fallback、快速编辑取消旧 semantic-token task，以及最终
+`LSP finished, exiting with status 0`。这些条目已逐项审阅，不能写成“LSP log 为空”，但没有非零
+退出、traceback、provider error 或协议失败。
+
+Telescope 预览临时 Lua 文件时还出现一次 LuaLS 跳过无关 659 KB meta 文件的 size-limit 提示；不影响
+本轮 C client、UI 或按键结论，但它暴露的临时目录 root 边界已进入 roadmap，不能静默当作无告警。
+早期 clipboard 探针的 selection 生命周期限制见维护历史；最终干净运行的双向能力和 4 字节恢复结论
+不外推为整组调试开始前的 clipboard 状态已经得到证明。
+
+0.10.4、0.11.3 和 0.11.7 的命令、映射、LSP 与降级矩阵结论保持有效，但没有因此取得同一 GUI、字体、
+剪贴板和物理按键结论。其他终端、Wayland、macOS 和 Windows 也不能继承 X11 `st` 的结果。
 
 ## 共享状态边界
 

@@ -5,8 +5,10 @@
 
 ## P2：维护体验
 
-- [ ] 在正常 GUI/终端会话检查 clipboard、图标字体、NvimTree、Telescope、ToggleTerm 和文档中的
-  活动按键；headless 结果不能替代完整交互体验。
+- [ ] 定界独立临时 Lua 文件或 Telescope preview 启动 LuaLS 时的 workspace root：本轮实机提示它扫描
+  到同属临时父目录、与当前文件无关的 Mason fixture，并因 500 KB 门槛跳过其中 659 KB 的 meta 文件。
+  先在隔离最小目录复现并记录 resolved root/workspace folders；确认是测试布局、上游 fallback 还是
+  仓库 root 配置后，再另行提交是否限制 root 的方案。
 
 ## 暂缓
 

@@ -53,6 +53,12 @@ Comment.nvim 的 toggler 与 opleader 不再复用同一完整键串，避免 op
 | `tjdevries/colorbuddy.nvim` | 依赖；基础档位 | Neosolarized 配置依赖 |
 | `nvim-lualine/lualine.nvim` | 活动；基础档位 | mode、branch、diff、诊断、文件、位置；不再请求缺失的 Fugitive extension |
 
+2026-07-19 已在真实 `st` 中用 Neovim 0.12.3 的键盘事件完成 UI 样本：NvimTree 由 `,e` 打开和
+关闭；Telescope 的 find-files、live-grep、buffers、help、resume、diagnostics、keymaps 和 file-browser
+全部打开并关闭，file-browser 的 `/`、`<C-w>`、`h` 和取消 `N` 路径通过；ToggleTerm 从 Normal
+和 Insert mapping 打开，确认 Zsh、`<Esc>`、五个 terminal-local 映射和关闭路径。进程回读与截图还
+确认图标、边框、中文、状态栏和布局正常。该结果不替代 0.10/0.11 的独立降级结论。
+
 ToggleTerm 仍继承 `vim.o.shell` 的 Zsh，保留 `,xc`、`:ToggleTerm` 和原生 `:TermExec`。仓库不创建
 Lazygit、Node、ncdu、htop、Python 的 Terminal 对象、全局 Lua helper、专用命令或按键；临时外部命令
 由用户显式传给 `:TermExec cmd="..."`，依赖边界见 [`dependencies.md`](dependencies.md)。

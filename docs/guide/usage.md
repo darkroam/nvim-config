@@ -74,6 +74,18 @@ git.nvim 或 Fugitive，也没有为它们保留失效按键。不要依靠 data
 Lazygit、Node、ncdu、htop 或 Python 创建专用 helper、命令或按键，也不把它们列为 ToggleTerm 依赖；
 执行前由用户确认实际命令名和 PATH，例如系统只有 `python3` 时就显式使用 `cmd="python3"`。
 
+## 交互显示与实机检查
+
+Headless smoke 可以确认命令、映射和插件加载，但不会检查终端实际送键、系统剪贴板或字体 fallback。
+2026-07-19 的 Neovim 0.12.3、X11、`st` 实机样本已用临时文件实际触发 NvimTree、全部仓库 Telescope
+入口、file-browser 局部按键、ToggleTerm、Zsh 和活动映射。截图确认文件树、picker、浮动终端、状态栏、
+LSP/诊断浮窗、中文及图标没有方框、截断或明显宽度错位。
+
+同一次最终干净运行还确认 `"+yy` 可由 X11 读取，外部 X11 selection 可由 `"+p` 粘贴回 Neovim，
+并把运行前保存的 4 字节内容逐字节恢复。早期调试探针曾因错误等待 `xclip` selection owner 而无法
+证明整组测试开始前的 clipboard 已恢复；该限制和最终恢复边界记录在维护历史，不属于配置功能通过的
+外推依据。其他终端、字体、桌面协议和 0.10/0.11 档位仍没有继承这次物理交互结论。
+
 ## 常见故障
 
 ### 旧版没有 LSP、Telescope 或 Tree-sitter 命令

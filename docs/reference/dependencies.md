@@ -74,6 +74,12 @@ ToggleTerm 的仓库运行时依赖只有核心表中的 `zsh`。`:TermExec cmd=
 | 系统剪贴板 provider | 功能必需 | `clipboard=unnamedplus`；X11 常用 `xclip`/`xsel`，Wayland 常用 `wl-copy`，平台也可使用原生 provider |
 | 支持真彩和 undercurl 的终端 | 可选 | Neosolarized 与诊断下划线的完整显示 |
 
+2026-07-19 的 X11 `st` 实机样本中，Neovim 0.12.3 把 clipboard provider 解析为 `xclip`，实际通过
+Neovim 到 X11 和 X11 到 Neovim 的双向哨兵传递。Fontconfig 可取得覆盖所需私用区字形的
+`Maple Mono NF CN`；活动 `st` 的 X resource 虽仍是通用 `monospace:size=10`，目标窗口截图中的
+Web-devicons、Telescope prompt、Lualine/诊断符号和中文均可显示，没有方框或明显宽度错位。该实测
+只证明当前 X11、Fontconfig 和 `st` 组合，不能降低其他机器仍需 provider 与字体的依赖级别。
+
 ## 构建与维护工具
 
 | 软件或能力 | 级别 | 用途 |

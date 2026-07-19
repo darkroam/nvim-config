@@ -29,7 +29,9 @@ REQUIRED_DOCS = (
     "docs/maintenance/history.md",
 )
 REQUIRED_SUPPORT_FILES = (
+    ".stylua.toml",
     "scripts/check-compat.py",
+    "scripts/check-lua-format.py",
     "scripts/compat-smoke.lua",
 )
 

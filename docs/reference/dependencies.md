@@ -81,7 +81,8 @@ ToggleTerm 的仓库运行时依赖只有核心表中的 `zsh`。`:TermExec cmd=
 | C compiler、`make` 及标准构建环境 | 功能必需 | Tree-sitter parser 或插件原生构建路径 |
 | `tar`、`curl` | 功能必需 | nvim-treesitter `main` 下载和解包 parser source |
 | `tree-sitter` CLI 0.26.1+ | 功能必需 | nvim-treesitter `main` parser 生成；可由 Mason 的 `tree-sitter-cli` 提供 |
-| Python 3 | 维护 | 运行 `scripts/check-docs.py` 和离线矩阵驱动器 `scripts/check-compat.py` |
+| StyLua | 维护 | `scripts/check-lua-format.py` 的格式和 AST provider；可来自 `STYLUA`、PATH 或当前 XDG data 的 Mason，当前以 2.5.2 实测；缺失时必须记为未验证 |
+| Python 3 | 维护 | 运行文档、Lua 格式检查器和离线矩阵驱动器 |
 | `git diff --check` | 维护 | 检查空白错误和冲突标记 |
 | Headless Neovim | 维护 | Lua/startup 验证和兼容矩阵；必须同时审阅输出、专用日志和退出码 |
 

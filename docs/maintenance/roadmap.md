@@ -5,8 +5,6 @@
 
 ## P2：维护体验
 
-- [ ] 建立一致的 Lua 格式化基线，消除历史 UTF-8 BOM 和风格差异；无 formatter 时不得声称全库
-  格式化通过。
 - [ ] 为 lazy.nvim manager commit 和 `lazy-lock.json` 制定受控更新周期；每次更新包含兼容矩阵
   验证，不能把 `:Lazy update` 当作日常无审查操作。
 - [ ] 在正常 GUI/终端会话检查 clipboard、图标字体、NvimTree、Telescope、ToggleTerm 和文档中的

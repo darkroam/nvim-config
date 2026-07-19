@@ -3,6 +3,21 @@
 本文件只记录已经完成并验证的重要项目，不复制原始日志或逐 commit 流水账。待办和有恢复条件的暂缓
 工作统一见 [`roadmap.md`](roadmap.md)。
 
+## 2026-07-19：建立 tracked Lua 格式基线
+
+- [x] 审计 18 个 tracked Lua：当前没有 UTF-8 BOM 或 CRLF，17 个已符合 StyLua 2.5.2；唯一内容差异是
+  `ftdetect/emacs-lisp.lua` 缺少末尾换行，本次只补齐该字节，没有虚构 BOM 清理结果。
+- [x] 新增根 `.stylua.toml`，明确 LuaJIT syntax、Unix 换行、Tab/4、120 列、双引号偏好、call
+  parentheses 和不折叠简单语句；Conform 与维护检查消费同一仓库规则，未来 StyLua 升级产生 diff 时
+  必须单独审阅。
+- [x] 新增 `scripts/check-lua-format.py`，只从 Git 取得 Lua 清单，独立拒绝 BOM、非 Unix 换行、无末尾
+  换行和无效 UTF-8，再按 `STYLUA`、PATH、当前 XDG data 的 Mason 顺序发现 provider，并执行
+  `--check --verify`。显式无效 `STYLUA` 返回 2 且不回退，不能冒充格式通过。
+- [x] 正常仓库 18/18 由 Mason StyLua 2.5.2 通过格式与 AST 校验；临时 Git fixture 分别确认 BOM 预检
+  和未格式化 diff 返回 1，缺失 provider 返回 2。Python 语法、文档合同和空白检查通过。
+- [x] README 和 canonical workflow 已把 Lua 检查列为维护命令；最终四版本矩阵继续通过
+  25/27/30/32 个活动 spec，输出无错误且专用 Neovim 日志为空。
+
 ## 2026-07-19：移除不可达的 ToggleTerm helper
 
 - [x] 确认 Lazygit、Node、ncdu、htop、Python 的五个 Terminal 对象和 `_G` toggle 函数没有仓库按键、

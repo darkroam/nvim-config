@@ -77,12 +77,17 @@
 
 ```sh
 python3 scripts/check-docs.py
+python3 scripts/check-lua-format.py
 git diff --check
 git status --short
 ```
 
 检查器验证文档结构和链接、Lua 所有权、Lazy 声明与 lockfile、兼容门槛、语言状态、可静态识别的
 自定义按键、roadmap/history 职责和可移植路径。
+
+Lua 格式检查只消费 Git 跟踪文件和根 `.stylua.toml`，同时验证 BOM、CRLF、末尾换行、StyLua 格式与
+AST 等价性。找不到 formatter 时退出 2，必须记录“StyLua 不可用，格式未验证”，不能因为编码预检或
+其他命令成功就声称全库格式通过。更新 StyLua 后若产生新 diff，先审阅规则和 formatter 版本再改代码。
 
 代码变更还要执行受影响的 Lua 和 Neovim 检查。Headless Neovim 可能打印错误后返回零，因此必须捕获
 并审阅标准输出和标准错误中的 `Error detected`、`E...`、traceback 和 provider error。网络、GUI、

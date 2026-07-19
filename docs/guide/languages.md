@@ -47,6 +47,11 @@ Conform 根据 filetype 选择 formatter，并以 `lsp_format="fallback"` 作为
 - Go 只有在语言开关启用后使用 `gofmt`；
 - Elisp 当前没有 formatter。
 
+本仓库内的 Lua 由根目录 `.stylua.toml` 统一定义 LuaJIT syntax、Unix 换行、Tab 缩进、120 列和引号等
+规则，Conform 格式化仓库文件时会读取同一配置。维护检查使用 `python3 scripts/check-lua-format.py`，只
+检查 Git 跟踪的 Lua 文件，并同时拒绝 BOM、CRLF 和缺失末尾换行；找不到 StyLua 时结果是未验证失败，
+不能写成全库格式化通过。
+
 统一命令通过 Mason 安装 StyLua 和 clang-format；也可单独诊断：
 
 ```vim

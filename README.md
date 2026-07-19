@@ -65,7 +65,11 @@ Run the offline documentation contract check with:
 
 ```sh
 python3 scripts/check-docs.py
+python3 scripts/check-lua-format.py
 ```
+
+A missing StyLua provider makes the Lua format check fail as unverified; it is
+never treated as a formatting pass.
 
 A zero exit code from headless Neovim is not sufficient when its output still
 contains startup or provider errors.

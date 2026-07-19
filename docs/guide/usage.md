@@ -7,7 +7,7 @@
 ## 启动后的界面
 
 - Colorscheme 是 Neosolarized，状态栏由 Lualine 提供；
-- `,e` 切换 NvimTree；LSP buffer 中同一按键被局部诊断浮窗覆盖；
+- `,e` 在普通和 LSP buffer 中都切换 NvimTree；
 - `<Tab>` 与 `<S-Tab>` 在 Bufferline 的 tab 模式中切换；
 - `,xc` 打开使用 Zsh 的浮动 ToggleTerm；
 - `,ff` 切换 ZenMode。
@@ -52,7 +52,8 @@ buffer 的 formatter，而不是假设 Mason 中存在同名软件包。C 优先
 ## LSP 与诊断
 
 在支持 LSP 的档位并成功 attach 后，buffer-local 按键提供定义、引用、hover、重命名、code action、
-诊断跳转和手动格式化。Neovim 0.12 使用以下入口检查：
+诊断跳转和手动格式化；`,df` 打开当前行诊断浮窗，Neovim 内置 `<C-w>d` 仍可使用。Neovim 0.12 使用
+以下入口检查：
 
 ```vim
 :lsp

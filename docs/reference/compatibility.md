@@ -84,6 +84,11 @@ Tree-sitter 完全缺席。两档的 LuaSnip build、Mason `lua-language-server`
 UTF-8 byte column 24，hover、root、buffer-local `gd` 和状态 0 shutdown 通过，三份 LSP 日志均没有旧
 capability 弃用提示。clangd 22.1.6 仍返回同值的旧 response 字段，但核心标准结果已独立验证。
 
+LSP buffer-local 诊断浮窗已从 `,e` 迁移到 `,df`，使基础档位提供的 NvimTree `,e` 在所有 buffer 中
+保持同一行为。0.10.4 已确认 `,e` 是全局 NvimTree 映射且 `,df` 缺席；0.11.3、0.11.7、0.12.3 均在
+真实 clangd attach 后确认 `,df` 为描述正确的 buffer-local callback、`,e` 仍为全局映射，并从同一 C
+buffer 分别实际打开诊断浮窗和 NvimTree。四档的 Neovim 内置 `<C-w>d` 均保留，最终离线矩阵继续通过。
+
 ## 共享状态边界
 
 0.12 parser 安装到 `stdpath("data")/treesitter-0.12`。较旧档位还会从 runtimepath 移除公共

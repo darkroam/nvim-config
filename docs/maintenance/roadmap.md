@@ -5,7 +5,6 @@
 
 ## P1：编辑行为
 
-- [ ] 评估 buffer-local LSP `<leader>e` 覆盖全局 NvimTree `<leader>e` 是否符合预期。
 - [ ] 审查 ToggleTerm 中没有仓库按键的 Lazygit、Node、ncdu、htop、Python helper，确认保留、改为
   user command、增加按键或删除，并处理 `python` 与 `python3` 命令差异。
 

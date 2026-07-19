@@ -128,7 +128,7 @@ return {
 					map("]d", function()
 						vim.diagnostic.jump({ count = 1, float = true })
 					end, "Next diagnostic")
-					map("<leader>e", vim.diagnostic.open_float, "Line diagnostic")
+					map("<leader>df", vim.diagnostic.open_float, "Line diagnostic")
 
 					if client and client.server_capabilities.documentHighlightProvider then
 						vim.api.nvim_clear_autocmds({ group = highlight_group, buffer = event.buf })

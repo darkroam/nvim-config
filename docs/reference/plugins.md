@@ -83,13 +83,14 @@ ToggleTerm 仍继承 `vim.o.shell` 的 Zsh。Lazygit、Node、ncdu、htop、Pyth
 | --- | --- | --- |
 | `williamboman/mason.nvim` | 活动；基础档位 | `:Mason` UI 与 PATH；machine-local package manager；由显式 `:DarkroamBootstrap` 按需同步加载 |
 | `williamboman/mason-lspconfig.nvim` | 条件活动；`lsp` 档位 | `:LspInstall`/`:LspUninstall` 时按需加载，生成 `ensure_installed`，`automatic_enable=false` |
-| `neovim/nvim-lspconfig` | 条件活动；`lsp` 档位、启动加载 | server definitions、`vim.lsp.config/enable`、LspAttach 映射；不让首个文件错过 FileType attach |
+| `neovim/nvim-lspconfig` | 条件活动；`lsp` 档位、启动加载 | server definitions、`vim.lsp.config/enable`、LspAttach 映射；诊断浮窗使用 buffer-local `,df`，不覆盖 NvimTree `,e` |
 | `stevearc/conform.nvim` | 活动；基础档位 | 显式依赖 Mason 建立 formatter PATH；C 使用规范名称 `clang-format`；保存格式化和 `lsp_format="fallback"` |
 
 Mason package 存在不等于 LSP 自动启用。Document highlight 由 Neovim 原生 LSP autocommand 提供，不再
 依赖使用 deprecated API 的 Illuminate。StyLua 只作为 formatter；`lua_ls`、`clangd` 和可选 `gopls`
 由语言表选择。`clang-format` 是独立 Mason formatter，不会作为 LSP 启动；基础档位不加载当前
-nvim-lspconfig 或相应 buffer-local 按键，但仍可格式化 C。
+nvim-lspconfig 或相应 buffer-local 按键，但仍可格式化 C。NvimTree 的全局 `,e` 在 LSP buffer 中也
+保持可达。
 
 `:DarkroamBootstrap` 不是插件命令代理，而是 `lua/darkroam/bootstrap.lua` 在 Lazy setup 前注册的仓库
 命令，因此所有支持档位都存在。提前 setup 只建立命令和 `VimLeavePre` guard，不加载插件；调用后才按

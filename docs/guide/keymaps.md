@@ -47,7 +47,7 @@ spec 的 `cond` 成立时创建。准确档位见
 
 | 模式 | 按键 | 行为 | 依赖 |
 | --- | --- | --- | --- |
-| Normal | `,e` | 切换 NvimTree | NvimTree；LSP buffer 中会被局部诊断映射覆盖 |
+| Normal | `,e` | 切换 NvimTree | NvimTree |
 | Normal | `,rr` | Telescope `find_files`，包含隐藏文件但尊重 ignore | `telescope` 档位 |
 | Normal | `,dd` | Telescope `live_grep` | `telescope` 档位、`rg` |
 | Normal | `,bb` | Telescope buffers | `telescope` 档位 |
@@ -117,7 +117,7 @@ Visual mode；其他档位不创建这两个插件映射。
 | Normal | `,ca` | code action |
 | Normal | `,lf` | 通过 Conform 异步格式化，必要时 LSP fallback |
 | Normal | `[d` / `]d` | 上一个/下一个诊断 |
-| Normal | `,e` | 当前行诊断浮窗；覆盖同 buffer 的全局 NvimTree `,e` |
+| Normal | `,df` | 当前行诊断浮窗 |
 
 ## Gitsigns
 

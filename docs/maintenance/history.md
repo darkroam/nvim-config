@@ -3,6 +3,18 @@
 本文件只记录已经完成并验证的重要项目，不复制原始日志或逐 commit 流水账。待办和有恢复条件的暂缓
 工作统一见 [`roadmap.md`](roadmap.md)。
 
+## 2026-07-19：消除文件树与诊断按键冲突
+
+- [x] 确认 LSP buffer-local `,e` 按 Neovim 规则必然覆盖 Lazy 创建的全局 NvimTree `,e`，导致最常用的
+  代码 buffer 无法通过统一按键切换文件树；旧文档虽准确记录覆盖，但不能消除行为分叉。
+- [x] 将当前行诊断浮窗迁移到 buffer-local `,df`，保留所有 buffer 的全局 NvimTree `,e`、诊断
+  `[d`/`]d` 和四档均存在的 Neovim 内置 `<C-w>d`。没有使用 `,ld`，避免继续占用 Comment.nvim
+  `,l{motion}` 的键序列空间。
+- [x] 0.10.4 确认 `,e` 的 global scope、描述和 `,df` 缺席；0.11.3、0.11.7、0.12.3 使用真实 clangd
+  22.1.6 attach，确认 `,df` 的 buffer-local scope、描述与 Lua callback，以及 `,e` 仍解析为全局映射。
+- [x] 三个 LSP 档位均从同一 C buffer 实际用 `,df` 打开注入诊断的浮窗，再用 `,e` 加载并打开
+  NvimTree；clangd 状态 0 shutdown。最终四版本矩阵仍通过 25/27/30/32 个活动 spec，专用日志为空。
+
 ## 2026-07-19：关闭自动注释续写
 
 - [x] 定界原配置的两处错误：给 flag 字符串 `formatoptions:append()` 传 `{ "r" }` 没有加入 `r`，而是

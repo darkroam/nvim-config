@@ -5,10 +5,7 @@
 
 ## P2：维护体验
 
-- [ ] 定界独立临时 Lua 文件或 Telescope preview 启动 LuaLS 时的 workspace root：本轮实机提示它扫描
-  到同属临时父目录、与当前文件无关的 Mason fixture，并因 500 KB 门槛跳过其中 659 KB 的 meta 文件。
-  先在隔离最小目录复现并记录 resolved root/workspace folders；确认是测试布局、上游 fallback 还是
-  仓库 root 配置后，再另行提交是否限制 root 的方案。
+当前没有已确认的待办。新的发现仍须先按维护流程提交方案，不能直接加入实现范围。
 
 ## 暂缓
 

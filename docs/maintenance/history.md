@@ -3,6 +3,24 @@
 本文件只记录已经完成并验证的重要项目，不复制原始日志或逐 commit 流水账。待办和有恢复条件的暂缓
 工作统一见 [`roadmap.md`](roadmap.md)。
 
+## 2026-07-20：定界 LuaLS 临时 workspace root
+
+- [x] 确认 0.12.3 消费锁定 nvim-lspconfig 的新版 `lsp/lua_ls.lua` 分级 root markers，仓库只叠加
+  settings/capabilities，没有覆盖 `root_dir`。旧交互探针在 Telescope 之前把普通 `test.c` buffer
+  改成 `lua`，宿主还存在 2026-07-19 创建的空 `/tmp/.git`；静态解析已得到临时 root `/tmp`、
+  仓库文件 root 为仓库目录。
+- [x] Neovim 0.12.3 与真实 LuaLS 3.18.2-dev 的最终矩阵确认：继承空 `/tmp/.git` 时 marker/client/
+  workspace 都为 `/tmp`；更近 `.stylua.toml` 时三者都是 fixture 目录；无祖先 marker 的
+  `/var/tmp` 文件以 nil root、空 workspace folders 正常 initialize。三个 client 都优雅停止。
+- [x] 单独通过真实 `:Telescope find_files` 和 layout state 取得选中 `sample.lua` 的 preview：
+  buffer 包含实际两行内容、`buftype=nofile`、preview client 数为 0，全局 client 列表也为空；
+  Telescope preview 没有触发 LuaLS。
+- [x] 三类 root 和 preview case 均返回 0、messages 与 `v:errmsg` 为空；四份核心日志都是 0 字节，
+  四份 LSP 日志各 51 字节且只有 `[START]`，没有 size-limit、Neovim/provider 或协议错误。
+- [x] 根因是临时测试 buffer 与异常宽的空 `/tmp/.git` marker 组合，不是普通项目或 Telescope 缺陷；
+  不修改 `lsp.lua`、workspace library、Telescope、插件或 lock。只校正文档并关闭 roadmap 项，
+  `/tmp/.git` 未删除或改名；`/var/tmp` fixture 仅用于本轮且不构成旧版本实测。
+
 ## 2026-07-19：完成 Neovim 0.12.3 X11/st 交互验收
 
 - [x] 确认默认二进制是 0.12.3，宿主为 Xorg、dwm 和 `st`；`xclip`、`xdotool`、`maim`、Zsh
@@ -23,8 +41,9 @@
   已安装的 Nerd Font 字形。
 - [x] 核心 Neovim 日志为空；单次 17,144 字节 LSP log 的 72 条 `[ERROR]` 全是 Neovim 对 clangd
   stderr `I[...]` 的包装，含无 compilation database 的 fallback、被新编辑取消的旧 semantic-token
-  task 和 status 0 shutdown，没有 traceback、provider 或协议失败。LuaLS 预览临时 Lua 文件时扫描到
-  无关父目录并跳过 659 KB meta 文件的提示作为非阻塞新发现进入 roadmap，不冒充无告警通过。
+  task 和 status 0 shutdown，没有 traceback、provider 或协议失败。LuaLS 处理被探针临时改成 `lua`
+  的普通 buffer 时扫描到无关父目录并跳过 659 KB meta 文件；当时作为非阻塞发现进入 roadmap，已由
+  2026-07-20 的独立 root/preview 矩阵校正最初的 preview 归因并完成定界。
 
 ## 2026-07-19：建立 Lazy 季度更新政策
 

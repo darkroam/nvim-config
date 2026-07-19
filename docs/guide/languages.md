@@ -38,6 +38,28 @@ clangd initialize 只发送标准 `general.positionEncodings`，不会发送 nvi
 LSP attach 后提供 definition、references、hover、rename、code action、诊断和手动格式化按键，完整
 列表见 [`keymaps.md`](keymaps.md)。Neovim 0.12 使用 `:lsp` 和 `:checkhealth vim.lsp` 检查 client。
 
+### LuaLS workspace root 边界
+
+Neovim 0.12.3 实际消费锁定 nvim-lspconfig 的新版 `lsp/lua_ls.lua`：先按 `.emmyrc.json` 或
+`.luarc*`，再按 StyLua/Selene 配置，最后按 `.git` 搜索祖先 root；仓库只叠加 settings 和
+capabilities，没有覆盖 `root_dir`。Neovim 找到 marker 后把该目录同时用于 `root_dir` 和
+workspace folders。Telescope scratch preview 是 `nofile` buffer，而核心 LSP enable callback 不会为
+这类 buffer 启动 client。
+
+2026-07-20 使用 Neovim 0.12.3 和真实 LuaLS 3.18.2-dev 完成三类隔离样本：
+
+- 普通 `/tmp` 文件受宿主空 `/tmp/.git` 影响，marker root、client root 和 workspace folder 都准确为
+  `/tmp`；
+- 更近的 `.stylua.toml` 将三者收敛到该临时项目目录，没有继承更远的 `/tmp/.git`；
+- 无祖先 marker 的 `/var/tmp` 文件以 `root_dir=nil`、空 workspace folders 的单文件状态初始化，
+  不是 attach 失败。
+
+三个 client 都完成 initialize 和优雅停止，messages 与核心日志为空，LSP 日志各只有启动行。单独的
+Telescope 样本选中真实 Lua 文件后，layout state 指向的 preview 含文件内容但保持 `buftype=nofile`，
+preview 和全局 client 数都为零。由此 2026-07-19 的 size-limit 提示已定界为交互探针先把普通
+`test.c` buffer 改成 `lua`，再由异常宽的空 `/tmp/.git` marker 将 workspace 扩到 `/tmp`；它不是
+Telescope preview attach，也不是仓库日常 root 配置缺陷，因此不增加 `lua_ls.root_dir` override。
+
 ## 格式化
 
 Conform 根据 filetype 选择 formatter，并以 `lsp_format="fallback"` 作为后备：

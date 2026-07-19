@@ -107,8 +107,16 @@ Neovim 把 clangd 写到 stderr 的 `I[...]` 协议信息统一包装为 72 条 
 `LSP finished, exiting with status 0`。这些条目已逐项审阅，不能写成“LSP log 为空”，但没有非零
 退出、traceback、provider error 或协议失败。
 
-Telescope 预览临时 Lua 文件时还出现一次 LuaLS 跳过无关 659 KB meta 文件的 size-limit 提示；不影响
-本轮 C client、UI 或按键结论，但它暴露的临时目录 root 边界已进入 roadmap，不能静默当作无告警。
+交互探针还出现一次 LuaLS 跳过无关 659 KB meta 文件的 size-limit 提示；2026-07-20 已完成定界。探针
+在 Telescope 之前把普通 `test.c` buffer 改成 `lua` filetype，宿主空 `/tmp/.git` 令 0.12.3 的
+`vim.fs.root()`、client root 和 workspace folders 都解析为 `/tmp`；更近 `.stylua.toml` 会把三者
+收敛到项目目录，无 marker 的 `/var/tmp` 则以 nil root 和空 workspace 正常初始化。三个真实 LuaLS
+进程均 initialize、优雅停止，核心日志为空，LSP 日志只有启动行。
+
+独立 Telescope 样本通过 layout state 取得含真实 Lua 文件内容的 preview buffer，确认其
+`buftype=nofile`、preview client 为零且全局没有 client。原提示因此是临时测试 buffer 与过宽测试
+marker 的组合，不是 Telescope preview attach 或日常配置缺陷；仓库保留上游 root marker 策略，不增加
+`lua_ls.root_dir` override。该结论只在 0.12.3 实测，不外推为旧版新增验证。
 早期 clipboard 探针的 selection 生命周期限制见维护历史；最终干净运行的双向能力和 4 字节恢复结论
 不外推为整组调试开始前的 clipboard 状态已经得到证明。
 

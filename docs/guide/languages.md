@@ -71,6 +71,10 @@ clang-format，0.11.3+ 再计划选中的 LSP，0.12+ 再计划 Tree-sitter CLI 
 不会为了验证而刷新 registry。启用 Go 后，不能由 Mason/parser 阶段补齐的 `gofmt` 仍作为外部命令
 检查；缺失时结果为 `PARTIAL`，不会把 LSP fallback 记作独立 formatter。
 
+Neovim 在任务运行中退出时，结果为 `CANCELLED`，`last_report()` 记录 `cancel_reason="vim-leave"` 和
+尚未完成的 Mason/parser/外部项目。该状态不是安装失败；再次启动后由用户重新执行命令，已成功安装的
+项目会按幂等规则跳过。严重异常退出导致 `VimLeavePre` 不执行时，不能保证生成取消摘要。
+
 ## 修改语言开关
 
 不能通过只安装一个工具来改变仓库语言状态。新增、关闭或修改语言时，需要先提出方案并同步：

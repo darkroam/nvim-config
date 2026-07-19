@@ -24,7 +24,7 @@
 | `lua/darkroam/languages.lua` | LSP、Mason、Conform 和 Tree-sitter 共用的语言开关 |
 | `lua/darkroam/compat.lua` | 版本比较、功能门槛和能力查询 |
 | `lua/darkroam/lazy.lua` | 固定 lazy.nvim、锁文件路径和 spec import |
-| `lua/darkroam/bootstrap.lua` | 注册显式工具链 bootstrap，生成版本化计划并汇总安装验证结果 |
+| `lua/darkroam/bootstrap.lua` | 提前注册显式工具链 bootstrap 和退出 guard，生成版本化计划并汇总单次结果 |
 | `lua/darkroam/plugins/editor.lua` | 基础编辑、注释、surround、autopairs 和 Toggle Alternate |
 | `lua/darkroam/plugins/ui.lua` | 主题、图标、文件树、状态栏、bufferline、终端和 ZenMode |
 | `lua/darkroam/plugins/completion.lua` | nvim-cmp、LuaSnip、snippet 和补全 source |
@@ -40,7 +40,7 @@
 | `docs/maintenance/` | 变更流程、roadmap 和精简历史 |
 | `scripts/check-docs.py` | 离线验证文档合同及其与配置的静态关系 |
 | `scripts/check-compat.py` | 用显式 Neovim 二进制和预恢复 Lazy data 编排离线兼容性矩阵 |
-| `scripts/compat-smoke.lua` | 在真实 Neovim 进程内检查版本门槛、插件状态、命令、按键和基础触发路径 |
+| `scripts/compat-smoke.lua` | 在真实 Neovim 进程内检查版本门槛、插件状态、命令、按键、基础触发和取消路径 |
 
 不使用仓库根的 `plugin/*.lua` 或 `after/plugin/*.lua` 配置入口。活动插件的声明、加载条件、配置和仓库
 按键由对应 Lazy spec 共同拥有，避免 provider 被禁用后仍由 runtime 自动执行配置。
@@ -52,17 +52,18 @@ init.lua
   |-- vim.loader.enable()（API 存在时）
   |-- darkroam.options
   |-- darkroam.keymaps
+  |-- darkroam.bootstrap.setup()（只注册命令和退出 guard）
   |-- darkroam.lazy
   |     |-- bootstrap/加载固定版本 lazy.nvim
   |     |-- 读取 lazy-lock.json
   |     `-- import darkroam.plugins.*
-  |-- darkroam.bootstrap.setup()（只注册命令）
   `-- darkroam.macos 或 darkroam.windows（按平台）
 ```
 
 首次缺少 lazy.nvim 时，manager bootstrap 只取得代码中固定的 commit；失败会停止插件层，但不会撤销
 已经设置的核心选项和插件无关按键。普通启动不更新插件，也不自动安装 Mason 软件包或首次 parser；
-`darkroam.bootstrap.setup()` 只注册 `:DarkroamBootstrap`，不加载 provider 或访问网络。
+`darkroam.bootstrap.setup()` 只依赖核心兼容/语言表，注册 `:DarkroamBootstrap` 和 `VimLeavePre` guard，
+不加载 provider 或访问网络。它位于 Lazy 前，使 guard 的执行顺序早于 Mason terminator。
 
 Lazy 重置 runtimepath 前会探测 Neovim 自带 `parser/lua.so` 的非 data runtime 根并显式保留，避免发行版
 把 parser 放在不同 lib 目录时丢失内置 parser。降级档位还会移除公共 `data/site`，防止读取旧 Packer
@@ -108,8 +109,10 @@ LSP 档位的 clangd 是两个独立 package。
 `:DarkroamBootstrap` 是用户显式调用的编排层。它先同步加载基础档位可用的 Mason，跳过已安装项，只有
 存在缺项时才异步刷新 registry 和并发安装；Mason 全部完成后，完整档位才调用 nvim-treesitter Task
 安装 parser。最终报告重新检查 Mason package 和对应可执行命令，并实际加载 parser 验证 ABI；托管
-失败记为 `FAILED`，仅外部命令缺失记为 `PARTIAL`。模块拒绝并发重复执行，并通过 `plan()`、
-`is_running()`、`last_report()` 提供只读状态。
+失败记为 `FAILED`，仅外部命令缺失记为 `PARTIAL`。每次运行只有一个 active report，完成和发布均为
+幂等操作；提前注册的退出 guard 将其冻结为 `CANCELLED`，后续异步回调先检查 active identity，不能
+进入新阶段或发布第二次结果。模块拒绝并发重复执行，并通过 `plan()`、`is_running()`、
+`last_report()` 提供只读状态。
 
 ## Tree-sitter 与 Textobjects
 

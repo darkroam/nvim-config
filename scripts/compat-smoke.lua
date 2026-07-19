@@ -186,6 +186,97 @@ if profile.telescope then
 	pcall(vim.cmd, "close!")
 end
 
+local function bootstrap_cancel_smoke()
+	require("lazy").load({ plugins = { "mason.nvim" }, wait = true })
+	local leave_autocmds = vim.api.nvim_get_autocmds({ event = "VimLeavePre" })
+	assert(leave_autocmds[1] and leave_autocmds[1].group_name == "DarkroamBootstrap", "exit guard is not first")
+
+	local original_registry = package.loaded["mason-registry"]
+	local original_treesitter = package.loaded["nvim-treesitter"]
+	local original_out_write = vim.api.nvim_out_write
+	local install_callback
+	local parser_started = false
+	local summary_count = 0
+	local missing_name = profile.mason[1]
+	local fake_package = {}
+
+	function fake_package:is_installing()
+		return false
+	end
+
+	function fake_package:install(_, callback)
+		install_callback = callback
+		return {}
+	end
+
+	package.loaded["mason-registry"] = {
+		is_installed = function(name)
+			return name ~= missing_name
+		end,
+		refresh = function(callback)
+			callback(true, {})
+		end,
+		get_package = function(name)
+			assert(name == missing_name, name)
+			return fake_package
+		end,
+	}
+	package.loaded["nvim-treesitter"] = {
+		get_installed = function()
+			return {}
+		end,
+		install = function()
+			parser_started = true
+			error("parser stage started after cancellation")
+		end,
+	}
+	vim.api.nvim_out_write = function(message)
+		if message:find("DARKROAM_BOOTSTRAP", 1, true) then
+			summary_count = summary_count + 1
+		end
+		original_out_write(message)
+	end
+
+	local ok, err = xpcall(function()
+		assert(bootstrap.run(), "bootstrap did not start")
+		assert(
+			vim.wait(1000, function()
+				return install_callback ~= nil
+			end, 10),
+			"fake package was not started"
+		)
+		assert(bootstrap.is_running(), "bootstrap stopped before exit")
+
+		vim.api.nvim_exec_autocmds("VimLeavePre", { modeline = false })
+		local report = assert(bootstrap.last_report(), "cancel report is missing")
+		assert(report.status == "CANCELLED", vim.inspect(report))
+		assert(report.cancel_reason == "vim-leave", vim.inspect(report))
+		assert(not bootstrap.is_running(), "bootstrap remained active")
+		assert(vim.deep_equal(report.mason.pending, { missing_name }), vim.inspect(report.mason.pending))
+		assert(#report.mason.ok == #profile.mason - 1, vim.inspect(report.mason.ok))
+		assert(#report.parsers.pending == #profile.parsers, vim.inspect(report.parsers.pending))
+		assert(#report.errors == 0, vim.inspect(report.errors))
+
+		install_callback(false, "terminated")
+		vim.wait(50, function()
+			return false
+		end, 10)
+		local after_callback = bootstrap.last_report()
+		assert(after_callback.status == "CANCELLED", vim.inspect(after_callback))
+		assert(#after_callback.errors == 0, vim.inspect(after_callback.errors))
+		assert(not parser_started, "parser stage started after cancellation")
+		assert(summary_count == 1, "summary count: " .. summary_count)
+	end, debug.traceback)
+
+	vim.api.nvim_out_write = original_out_write
+	package.loaded["mason-registry"] = original_registry
+	package.loaded["nvim-treesitter"] = original_treesitter
+	assert(ok, err)
+end
+
+local cancel_ok, cancel_err = pcall(bootstrap_cancel_smoke)
+check(cancel_ok, "bootstrap-cancel", cancel_err)
+
 if #failures > 0 then
 	vim.api.nvim_err_writeln(
 		"DARKROAM_COMPAT_FAIL version=" .. actual_version .. "\n- " .. table.concat(failures, "\n- ")

@@ -4,6 +4,8 @@ local languages = require("darkroam.languages")
 local M = {}
 
 local running = false
+local leaving = false
+local active_report
 local last_report
 
 local language_order = { "lua", "c", "elisp", "go" }
@@ -156,7 +158,95 @@ local function join_or_dash(values)
 	return #values > 0 and table.concat(values, ",") or "-"
 end
 
+local function progress(planned, section)
+	local completed = {}
+	for _, key in ipairs({ "skipped", "installed" }) do
+		for _, name in ipairs(section[key] or {}) do
+			completed[name] = true
+		end
+	end
+
+	local ok = {}
+	local pending = {}
+	for _, name in ipairs(planned) do
+		table.insert(completed[name] and ok or pending, name)
+	end
+	return ok, pending
+end
+
+local function is_active(report)
+	return running and not leaving and active_report == report and report.status == "RUNNING"
+end
+
+local function publish(report)
+	if report._published then
+		return
+	end
+	report._published = true
+	if active_report == report then
+		active_report = nil
+		running = false
+	end
+
+	local snapshot = vim.deepcopy(report)
+	snapshot._published = nil
+	last_report = snapshot
+	local mason_ok = report.mason.ok or {}
+	local parser_ok = report.parsers.ok or {}
+	local external_ok = report.external.ok or {}
+	local mason_incomplete = report.mason.missing or report.mason.pending or {}
+	local parser_incomplete = report.parsers.missing or report.parsers.pending or {}
+	local external_incomplete = report.external.missing or report.external.pending or {}
+	local summary = {
+		"DARKROAM_BOOTSTRAP",
+		"status=" .. report.status,
+	}
+	if report.cancel_reason then
+		table.insert(summary, "reason=" .. report.cancel_reason)
+	end
+	vim.list_extend(summary, {
+		"version=" .. report.plan.version,
+		("mason=%d/%d"):format(#mason_ok, #report.plan.mason),
+		("parsers=%d/%d"):format(#parser_ok, #report.plan.parsers),
+		("external=%d/%d"):format(#external_ok, #report.plan.external),
+		"missing_mason=" .. join_or_dash(mason_incomplete),
+		"missing_parsers=" .. join_or_dash(parser_incomplete),
+		"missing_external=" .. join_or_dash(external_incomplete),
+		"errors=" .. #report.errors,
+	})
+	vim.api.nvim_out_write(table.concat(summary, " ") .. "\n")
+
+	if report.status == "CANCELLED" then
+		return
+	end
+	if #report.errors > 0 then
+		local messages = {}
+		for _, item in ipairs(report.errors) do
+			table.insert(messages, ("%s/%s: %s"):format(item.stage, item.name, item.message))
+		end
+		vim.notify(table.concat(messages, "\n"), vim.log.levels.ERROR, { title = "Darkroam bootstrap" })
+	elseif #mason_incomplete > 0 or #parser_incomplete > 0 then
+		vim.notify(
+			("托管项目验证失败：Mason=%s；parser=%s"):format(
+				join_or_dash(mason_incomplete),
+				join_or_dash(parser_incomplete)
+			),
+			vim.log.levels.ERROR,
+			{ title = "Darkroam bootstrap" }
+		)
+	elseif #external_incomplete > 0 then
+		vim.notify(
+			"缺少外部命令：" .. table.concat(external_incomplete, ", "),
+			vim.log.levels.WARN,
+			{ title = "Darkroam bootstrap" }
+		)
+	end
+end
+
 local function finish(report, registry, treesitter)
+	if not is_active(report) then
+		return
+	end
 	report.mason.ok = {}
 	report.mason.missing = {}
 	report.mason.missing_executables = {}
@@ -218,47 +308,28 @@ local function finish(report, registry, treesitter)
 		report.status = "OK"
 	end
 
-	running = false
-	last_report = vim.deepcopy(report)
-	local summary = table.concat({
-		"DARKROAM_BOOTSTRAP",
-		"status=" .. report.status,
-		"version=" .. report.plan.version,
-		("mason=%d/%d"):format(#report.mason.ok, #report.plan.mason),
-		("parsers=%d/%d"):format(#report.parsers.ok, #report.plan.parsers),
-		("external=%d/%d"):format(#report.external.ok, #report.plan.external),
-		"missing_mason=" .. join_or_dash(report.mason.missing),
-		"missing_parsers=" .. join_or_dash(report.parsers.missing),
-		"missing_external=" .. join_or_dash(report.external.missing),
-		"errors=" .. #report.errors,
-	}, " ")
-	vim.api.nvim_out_write(summary .. "\n")
+	publish(report)
+end
 
-	if #report.errors > 0 then
-		local messages = {}
-		for _, item in ipairs(report.errors) do
-			table.insert(messages, ("%s/%s: %s"):format(item.stage, item.name, item.message))
-		end
-		vim.notify(table.concat(messages, "\n"), vim.log.levels.ERROR, { title = "Darkroam bootstrap" })
-	elseif #report.mason.missing > 0 or #report.parsers.missing > 0 then
-		vim.notify(
-			("托管项目验证失败：Mason=%s；parser=%s"):format(
-				join_or_dash(report.mason.missing),
-				join_or_dash(report.parsers.missing)
-			),
-			vim.log.levels.ERROR,
-			{ title = "Darkroam bootstrap" }
-		)
-	elseif #report.external.missing > 0 then
-		vim.notify(
-			"缺少外部命令：" .. table.concat(report.external.missing, ", "),
-			vim.log.levels.WARN,
-			{ title = "Darkroam bootstrap" }
-		)
+local function cancel_active(reason)
+	local report = active_report
+	if not running or report == nil or report.status ~= "RUNNING" then
+		return false
 	end
+	report.status = "CANCELLED"
+	report.cancel_reason = reason
+	report.mason.ok, report.mason.pending = progress(report.plan.mason, report.mason)
+	report.parsers.ok, report.parsers.pending = progress(report.plan.parsers, report.parsers)
+	report.external.ok = {}
+	report.external.pending = vim.deepcopy(report.plan.external)
+	publish(report)
+	return true
 end
 
 local function install_parsers(report, registry)
+	if not is_active(report) then
+		return
+	end
 	if #report.plan.parsers == 0 then
 		finish(report, registry, nil)
 		return
@@ -307,6 +378,9 @@ local function install_parsers(report, registry)
 	end
 	local await_ok, await_error = pcall(task.await, task, function(err, success)
 		vim.schedule(function()
+			if not is_active(report) then
+				return
+			end
 			if err or success ~= true then
 				add_error(report, "parser-install", table.concat(missing, ","), err or "installer returned false")
 			else
@@ -322,8 +396,14 @@ local function install_parsers(report, registry)
 end
 
 local function install_mason_packages(report, registry, missing)
+	if not is_active(report) then
+		return
+	end
 	local remaining = #missing
 	local function complete_one()
+		if not is_active(report) then
+			return
+		end
 		remaining = remaining - 1
 		if remaining == 0 then
 			install_parsers(report, registry)
@@ -343,6 +423,9 @@ local function install_mason_packages(report, registry, missing)
 			local start_ok, start_error = pcall(function()
 				package:install({}, function(success, err)
 					vim.schedule(function()
+						if not is_active(report) then
+							return
+						end
 						local ready, missing_executables = mason_ready(registry, package_name)
 						if success and ready then
 							table.insert(report.mason.installed, package_name)
@@ -365,6 +448,9 @@ local function install_mason_packages(report, registry, missing)
 end
 
 local function start_mason(report)
+	if not is_active(report) then
+		return
+	end
 	if #report.plan.mason == 0 then
 		install_parsers(report, nil)
 		return
@@ -402,6 +488,9 @@ local function start_mason(report)
 	vim.notify("正在刷新 Mason registry", vim.log.levels.INFO, { title = "Darkroam bootstrap" })
 	local refresh_ok, refresh_error = pcall(registry.refresh, function(success, result)
 		vim.schedule(function()
+			if not is_active(report) then
+				return
+			end
 			if not success then
 				add_error(report, "mason-refresh", "registry", result)
 				finish(report, registry, nil)
@@ -420,6 +509,10 @@ local function start_mason(report)
 end
 
 function M.run()
+	if leaving then
+		vim.notify("Neovim 正在退出", vim.log.levels.WARN, { title = "Darkroam bootstrap" })
+		return false
+	end
 	if running then
 		vim.notify("bootstrap 已在运行", vim.log.levels.WARN, { title = "Darkroam bootstrap" })
 		return false
@@ -439,6 +532,7 @@ function M.run()
 		external = {},
 		errors = {},
 	}
+	active_report = report
 	last_report = vim.deepcopy(report)
 	vim.notify("正在检查语言工具链", vim.log.levels.INFO, { title = "Darkroam bootstrap" })
 	start_mason(report)
@@ -446,6 +540,16 @@ function M.run()
 end
 
 function M.setup()
+	local group = vim.api.nvim_create_augroup("DarkroamBootstrap", { clear = true })
+	vim.api.nvim_create_autocmd("VimLeavePre", {
+		group = group,
+		once = true,
+		desc = "Cancel active Darkroam bootstrap before provider termination",
+		callback = function()
+			leaving = true
+			cancel_active("vim-leave")
+		end,
+	})
 	if vim.fn.exists(":DarkroamBootstrap") == 2 then
 		return
 	end

@@ -3,6 +3,22 @@
 本文件只记录已经完成并验证的重要项目，不复制原始日志或逐 commit 流水账。待办和有恢复条件的暂缓
 工作统一见 [`roadmap.md`](roadmap.md)。
 
+## 2026-07-19：Bootstrap 退出取消闭环
+
+- [x] 定界手动中断的根因：Mason `VimLeavePre` terminator 会以失败回调关闭活动 package，旧计数归零后
+  仍进入 parser 阶段；`ExitPre` 因退出仍可能被未保存 buffer 取消，不适合作为可靠状态边界。
+- [x] 将 `darkroam.bootstrap.setup()` 移到 Lazy 前，只提前注册命令和 `VimLeavePre` guard，不加载插件
+  或联网；四档都确认该 guard 是首个退出 autocmd，执行顺序早于随后注册的 Mason terminator。
+- [x] 为每次运行建立唯一 active report，将结果发布改为幂等单出口；退出冻结为 `CANCELLED`，保存
+  `cancel_reason="vim-leave"` 和 pending 项。Mason refresh/package 与 parser Task 回调失去 active identity
+  后立即返回，不能累计错误、进入新阶段或发布第二份摘要。
+- [x] `scripts/compat-smoke.lua` 在 0.10.4、0.11.3、0.11.7、0.12.3 中注入延迟假 package，触发退出后
+  再补发失败回调；四档均确认单次摘要、pending 计划、`is_running=false`、错误为空且 parser 未启动，
+  最终仍通过 25/27/30/32 spec 矩阵和空日志检查。
+- [x] 独立 0.12.3 真实 `:qa!` 探针以状态 0 输出一次 `CANCELLED` 且专用日志为空；正常完整数据路径仍
+  输出一次 5/5 Mason、3/3 parser 的 `OK`。保留 Mason 自身终止提示边界，`v:dying >= 2` 的严重异常
+  退出不冒充可生成 Lua 取消摘要。
+
 ## 2026-07-19：C formatter Provider 闭环
 
 - [x] 确认当前机器由用户通过 Mason 手工安装的 `clang-format` 22.1.8 在 Neovim PATH 中可执行；登录

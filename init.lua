@@ -4,8 +4,8 @@ end
 
 require("darkroam.options")
 require("darkroam.keymaps")
-require("darkroam.lazy")
 require("darkroam.bootstrap").setup()
+require("darkroam.lazy")
 
 local has = vim.fn.has
 local is_mac = has("macunix")

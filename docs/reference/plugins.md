@@ -112,9 +112,11 @@ runtime library 入口、buffer-local `gd`、关闭 LuaLS formatting 以及 hove
 
 0.11.3 和 0.11.7 分别在独立 XDG 环境由 Mason 安装 LuaLS 3.18.2-dev 与 clangd 22.1.6；两档实际
 Lua/C buffer 均只有预期 client attach，并通过 root、`gd`、hover 和优雅 shutdown 检查。锁定的
-nvim-lspconfig 仍在 clangd 默认能力中声明旧 `offsetEncoding` 扩展，clangd 22.1.6 会记录其将在
-clangd 23 移除的提示；当前 initialize 与请求可用，升级前对标准 `positionEncodings` 协商的复核由
-roadmap 跟踪。
+nvim-lspconfig 仍在 clangd 默认能力中声明旧 `offsetEncoding` 扩展；仓库通过 clangd 的
+`before_init` 从实际 initialize payload 删除该字段，同时保留标准 `general.positionEncodings` 和
+上游其他配置。0.11.3、0.11.7、0.12.3 的真实 clangd 22.1.6 探针均协商为标准 `utf-8`，含中文前缀
+的 hover/definition、root、按键和 shutdown 通过，旧 capability 弃用提示消失。cmp-nvim-lsp 的
+completion capability 通过深度合并叠加到 Neovim 核心表，不会替换标准 general capability。
 
 ## 搜索和文件浏览
 

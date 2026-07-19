@@ -3,12 +3,6 @@
 本文只保存尚未完成的工作。`[ ]` 表示待办；暂缓项必须给出恢复条件。优先级描述风险，不代表自动
 授权，任何实现仍需按 [`workflow.md`](workflow.md) 单独提交方案并获得确认。
 
-## P1：安装与工具链
-
-- [ ] 在升级到 clangd 23 或更新 nvim-lspconfig 前，处理其将移除的旧 `offsetEncoding` 扩展：当前
-  锁定 nvim-lspconfig 会声明该能力，clangd 22.1.6 记录弃用提示但 initialize、hover 和 shutdown
-  均通过；后续方案必须验证标准 `positionEncodings` 协商，而不是只过滤 server stderr。
-
 ## P1：编辑行为
 
 - [ ] 核对 `formatoptions` 追加 `r` 后又移除 `cro` 的真实目标，更新注释并以 buffer 行为验证。

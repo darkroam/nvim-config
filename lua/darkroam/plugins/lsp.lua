@@ -19,6 +19,10 @@ local lsp_enabled = function()
 	return compat.supports("lsp")
 end
 
+local function use_standard_position_encodings(params)
+	params.capabilities.offsetEncoding = nil
+end
+
 return {
 	{
 		"williamboman/mason.nvim",
@@ -73,7 +77,7 @@ return {
 		},
 		config = function()
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
-			capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
+			capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
 
 			vim.diagnostic.config({
 				virtual_text = { prefix = "●" },
@@ -165,6 +169,7 @@ return {
 				},
 				clangd = {
 					filetypes = { "c", "cpp", "objc", "objcpp", "cuda" },
+					before_init = use_standard_position_encodings,
 				},
 				gopls = {
 					root_dir = function(bufnr, on_dir)

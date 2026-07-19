@@ -3,6 +3,23 @@
 本文件只记录已经完成并验证的重要项目，不复制原始日志或逐 commit 流水账。待办和有恢复条件的暂缓
 工作统一见 [`roadmap.md`](roadmap.md)。
 
+## 2026-07-19：clangd 标准位置编码协商
+
+- [x] 确认锁定的 nvim-lspconfig 会在 resolved clangd config 中加入旧 `offsetEncoding`，而
+  `vim.lsp.config()` 的深度合并不能用 Lua `nil` 删除上游键；`vim.lsp.enable()` 还会重建缓存，因此
+  解析后直接改表不是稳定方案。
+- [x] 在 clangd `before_init` 删除实际 initialize payload 中的旧 capability，保留 Neovim 核心
+  `general.positionEncodings`、nvim-cmp completion capability、上游 `editsNearCursor`、命令和 hooks；
+  同时把 cmp capability 改为深度叠加到核心表，不再把完整核心表误作其扁平 override 参数。
+- [x] 四版本离线矩阵继续通过 25/27/30/32 个活动 spec；0.10.4 保持 LSP 禁用，0.11.3、0.11.7、
+  0.12.3 均确认上游默认字段仍可识别，但 hook 后的实际参数只保留标准位置编码列表。
+- [x] 三个 LSP 档位使用仓库真实配置与 Mason clangd 22.1.6 打开同一含中文前缀的 C 文件：initialize、
+  root、buffer-local `gd`、hover、definition 和 shutdown 均通过，标准 `positionEncoding="utf-8"` 令
+  definition 返回 UTF-8 byte column 24，client 也使用 `utf-8`。
+- [x] 三份 trace LSP 日志均没有 `offsetEncoding capability is a deprecated clangd extension`；clangd
+  以状态 0 退出。22.1.6 仍返回同值的旧 response 字段，但同时返回并实际采用标准字段，未来移除旧
+  response 不影响已验证的核心协商路径。
+
 ## 2026-07-19：Bootstrap 退出取消闭环
 
 - [x] 定界手动中断的根因：Mason `VimLeavePre` terminator 会以失败回调关闭活动 package，旧计数归零后

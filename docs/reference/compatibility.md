@@ -72,8 +72,11 @@ Telescope 和 Tree-sitter spec、checkout、命令与按键均保持缺席，基
 Tree-sitter 完全缺席。两档的 LuaSnip build、Mason `lua-language-server` 3.18.2-dev 与 `clangd`
 22.1.6 安装、NvimTree/ToggleTerm/ZenMode、Zsh、LuaLS 和 clangd 实际 attach 均通过；LuaLS 与 clangd
 还验证了项目 root、buffer-local `gd` 和 hover，LuaLS formatting 保持关闭。专用 Neovim 日志为空。
-clangd 22.1.6 会为锁定 nvim-lspconfig 提供的旧 `offsetEncoding` 扩展写入弃用提示，但仍通过标准
-初始化、请求与优雅 shutdown；这不是当前档位失败，移除扩展前的兼容处理单独由 roadmap 跟踪。
+锁定的 nvim-lspconfig 仍声明旧 `offsetEncoding` 扩展；仓库已在 initialize 前从实际 payload 删除
+该字段，保留 Neovim 0.11.3+ 的标准 `general.positionEncodings`。0.11.3、0.11.7、0.12.3 均与 clangd
+22.1.6 协商出标准 `positionEncoding="utf-8"`，client 使用 `utf-8`；含中文前缀的 definition 返回
+UTF-8 byte column 24，hover、root、buffer-local `gd` 和状态 0 shutdown 通过，三份 LSP 日志均没有旧
+capability 弃用提示。clangd 22.1.6 仍返回同值的旧 response 字段，但核心标准结果已独立验证。
 
 ## 共享状态边界
 

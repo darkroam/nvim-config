@@ -139,6 +139,30 @@ end
 
 check(command_exists("LspInstall") == profile.lsp, "command-gate:LspInstall")
 check(plugin_loaded("nvim-lspconfig") == profile.lsp, "startup-load:nvim-lspconfig")
+if profile.lsp then
+	local clangd = vim.lsp.config.clangd
+	check(type(clangd) == "table", "clangd-config")
+	if type(clangd) == "table" then
+		check(type(clangd.before_init) == "function", "clangd-before-init")
+		check(same_list(clangd.capabilities.offsetEncoding, { "utf-8", "utf-16" }), "clangd-upstream-offset")
+
+		local params = { capabilities = vim.deepcopy(clangd.capabilities) }
+		if type(clangd.before_init) == "function" then
+			clangd.before_init(params, clangd)
+		end
+		check(
+			params.capabilities.offsetEncoding == nil,
+			"clangd-wire-offset",
+			vim.inspect(params.capabilities.offsetEncoding)
+		)
+		check(
+			same_list(params.capabilities.general.positionEncodings, { "utf-8", "utf-16", "utf-32" }),
+			"clangd-wire-position-encodings",
+			vim.inspect(params.capabilities.general.positionEncodings)
+		)
+		check(params.capabilities.textDocument.completion.editsNearCursor == true, "clangd-wire-edits-near-cursor")
+	end
+end
 
 local bootstrap = require("darkroam.bootstrap")
 local bootstrap_plan = bootstrap.plan()

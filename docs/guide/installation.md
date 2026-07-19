@@ -165,10 +165,12 @@ provider 的独立 clean 安装均保留准确边界。0.10.4 已实际使用 `c
 配置后 55 ms 完成自动 attach，root、当前 runtime library 入口、buffer-local `gd`、禁用 LuaLS
 formatting 和实际 hover 请求均通过。判断安装结果时应区分配置失败与执行环境限制。
 
-当前锁定的 nvim-lspconfig 为 clangd 声明兼容旧客户端的 `offsetEncoding` 扩展。clangd 22.1.6 会在
-LSP 日志中提示该扩展将在 clangd 23 移除，但当前仍能 initialize、处理 hover 并以状态 0 shutdown。
-这项提示已经进入 roadmap；升级 clangd 或 nvim-lspconfig 时必须复测标准 `positionEncodings` 协商，
-不能只隐藏日志。
+当前锁定的 nvim-lspconfig 仍在 clangd 默认配置中声明兼容旧客户端的 `offsetEncoding` 扩展。仓库在
+发送 clangd initialize 请求前删除该字段，只发送 Neovim 提供的标准
+`general.positionEncodings`。clangd 22.1.6 返回标准 `capabilities.positionEncoding="utf-8"`，Neovim
+client 最终使用 `utf-8`；该 server 版本还返回同值的旧 response 字段，但未来移除不会影响核心处理的
+标准结果。仓库不改写其他 clangd capability、命令或 hook，也不通过过滤 stderr 隐藏问题。升级 clangd
+或 nvim-lspconfig 时仍须复测 initialize payload、协商结果和多字节位置，不能仅凭请求成功判断兼容。
 
 C formatter 使用 Conform 的规范名称 `clang-format`，由同名 Mason package 提供；`clangd` 仍是不同的
 LSP 软件包，不能互相替代。当前机器由用户手工安装的 `clang-format` 22.1.8 已在 Neovim 的 Mason PATH
@@ -242,8 +244,9 @@ python3 scripts/check-compat.py \
 - 旧版出现 Telescope/LSP/Tree-sitter 最低版本错误：检查是否仍有 Packer start package 绕过条件加载。
 - shell 或 ToggleTerm 失败：使用 `:set shell?` 和 `command -v zsh` 核对。
 - 系统 PATH 找不到 Mason 工具：以 `:Mason` 和 `:ConformInfo` 为准，同时确认 server 是否真正启动。
-- clangd 日志出现 `offsetEncoding capability is a deprecated clangd extension`：当前锁定组合在 clangd
-  22.1.6 上功能可用，但升级到 clangd 23 前必须按 roadmap 复核；不要把过滤 stderr 当作修复。
+- clangd 日志出现 `offsetEncoding capability is a deprecated clangd extension`：说明 initialize 前的
+  capability 清理没有生效，应检查最终发送参数和 nvim-lspconfig 配置合并；不要过滤 stderr 或把退出码
+  0 当作通过。
 - 自动 smoke 在启动前报告 checkout 缺失或 commit 不符：先在受控联网步骤完成 `:Lazy restore`，再
   重新离线运行；验证脚本本身不会改变插件版本或补下载。
 

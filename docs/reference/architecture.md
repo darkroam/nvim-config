@@ -101,6 +101,13 @@ languages.lua
 `automatic_enable=false`，只在显式调用 `:LspInstall`/`:LspUninstall` 时加载并处理语言表生成的
 `ensure_installed`；它不会把 Mason 中所有软件包自动作为 LSP 启动。
 
+`vim.lsp.config()` 会递归合并 nvim-lspconfig 的 server definition；在传入配置中省略字段或赋 Lua
+`nil` 不能删除上游已有键。clangd 因此在 `before_init` 边界清理实际 initialize payload 中的旧
+`capabilities.offsetEncoding`，保留核心生成的 `capabilities.general.positionEncodings` 和其他上游
+clangd 配置。cmp-nvim-lsp 的 completion capability 通过 `vim.tbl_deep_extend()` 叠加到核心表，而不是
+把完整核心表误作该插件的扁平 override 参数。该边界不依赖 resolved config 缓存，重新 enable 也会
+再次执行。
+
 命名 `LspAttach` augroup 建立 buffer-local 导航、重命名、code action、诊断和格式化按键。Conform
 是统一格式化入口，`lsp_format="fallback"` 只在没有可用 formatter 时回退 LSP。LuaLS formatting
 capability 被关闭，避免与 StyLua 重复。基础档位的 StyLua 和 clang-format 都由 Mason 管理；后者与

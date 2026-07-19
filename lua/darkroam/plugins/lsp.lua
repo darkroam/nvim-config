@@ -48,7 +48,7 @@ return {
 				formatters_by_ft.lua = { "stylua" }
 			end
 			if languages.syntax.c then
-				formatters_by_ft.c = { "clang_format" }
+				formatters_by_ft.c = { "clang-format" }
 			end
 			if languages.syntax.go then
 				formatters_by_ft.go = { "gofmt" }

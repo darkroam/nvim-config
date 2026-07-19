@@ -38,7 +38,9 @@ NvimTree 是两个独立入口。
 - `<S-Tab>` 选择上一候选或向前跳转 snippet。
 
 保存时 Conform 根据 filetype 尝试 formatter，并在配置允许时回退到 LSP。用 `:ConformInfo` 判断当前
-buffer 的 formatter，而不是假设 Mason 中存在同名软件包。
+buffer 的 formatter，而不是假设 Mason 中存在同名软件包。C 优先使用 Mason 管理的 `clang-format`；
+它读取项目 `.clang-format`，项目没有配置时使用上游 LLVM fallback。登录 shell 看不到该命令时，仍应
+在 Neovim 中检查 Mason PATH 和实际格式化结果。
 
 ## LSP 与诊断
 

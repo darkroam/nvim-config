@@ -6,28 +6,28 @@ local profiles = {
 		lsp = false,
 		telescope = false,
 		treesitter = false,
-		mason = { "stylua" },
+		mason = { "stylua", "clang-format" },
 		parsers = {},
 	},
 	["0.11.3"] = {
 		lsp = true,
 		telescope = false,
 		treesitter = false,
-		mason = { "stylua", "lua-language-server", "clangd" },
+		mason = { "stylua", "clang-format", "lua-language-server", "clangd" },
 		parsers = {},
 	},
 	["0.11.7"] = {
 		lsp = true,
 		telescope = true,
 		treesitter = false,
-		mason = { "stylua", "lua-language-server", "clangd" },
+		mason = { "stylua", "clang-format", "lua-language-server", "clangd" },
 		parsers = {},
 	},
 	["0.12.3"] = {
 		lsp = true,
 		telescope = true,
 		treesitter = true,
-		mason = { "stylua", "lua-language-server", "clangd", "tree-sitter-cli" },
+		mason = { "stylua", "clang-format", "lua-language-server", "clangd", "tree-sitter-cli" },
 		parsers = { "lua", "c", "commonlisp" },
 	},
 }
@@ -150,11 +150,7 @@ check(bootstrap_plan.features.lsp == profile.lsp, "bootstrap-plan:lsp")
 check(bootstrap_plan.features.treesitter == profile.treesitter, "bootstrap-plan:treesitter")
 check(same_list(bootstrap_plan.mason, profile.mason), "bootstrap-plan:mason", vim.inspect(bootstrap_plan.mason))
 check(same_list(bootstrap_plan.parsers, profile.parsers), "bootstrap-plan:parsers", vim.inspect(bootstrap_plan.parsers))
-check(
-	same_list(bootstrap_plan.external, { "clang-format" }),
-	"bootstrap-plan:external",
-	vim.inspect(bootstrap_plan.external)
-)
+check(same_list(bootstrap_plan.external, {}), "bootstrap-plan:external", vim.inspect(bootstrap_plan.external))
 check(plugin_loaded("mason.nvim") == profile.lsp, "bootstrap-no-startup-mason-load")
 
 local telescope_keys = { ",rr", ",dd", ",bb", ";t", ";;", ";e", ",kk", ",xf" }

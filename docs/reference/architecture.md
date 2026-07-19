@@ -102,7 +102,8 @@ languages.lua
 
 命名 `LspAttach` augroup 建立 buffer-local 导航、重命名、code action、诊断和格式化按键。Conform
 是统一格式化入口，`lsp_format="fallback"` 只在没有可用 formatter 时回退 LSP。LuaLS formatting
-capability 被关闭，避免与 StyLua 重复。
+capability 被关闭，避免与 StyLua 重复。基础档位的 StyLua 和 clang-format 都由 Mason 管理；后者与
+LSP 档位的 clangd 是两个独立 package。
 
 `:DarkroamBootstrap` 是用户显式调用的编排层。它先同步加载基础档位可用的 Mason，跳过已安装项，只有
 存在缺项时才异步刷新 registry 和并发安装；Mason 全部完成后，完整档位才调用 nvim-treesitter Task

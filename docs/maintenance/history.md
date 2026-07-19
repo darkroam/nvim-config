@@ -3,6 +3,22 @@
 本文件只记录已经完成并验证的重要项目，不复制原始日志或逐 commit 流水账。待办和有恢复条件的暂缓
 工作统一见 [`roadmap.md`](roadmap.md)。
 
+## 2026-07-19：C formatter Provider 闭环
+
+- [x] 确认当前机器由用户通过 Mason 手工安装的 `clang-format` 22.1.8 在 Neovim PATH 中可执行；登录
+  shell 没有 Mason PATH 不代表 Neovim provider 缺失，并继续明确区分 formatter 与 clangd LSP。
+- [x] 将 `clang-format` 纳入 `languages.lua` 驱动的基础 Mason 计划，并登记可执行入口；计划按层次稳定
+  生成为 0.10.4 的 2 项、0.11.3/0.11.7 的 4 项、0.12.3 的 5 项加 3 个 parser，Go 关闭时没有外部缺项。
+- [x] 将 Conform 从 deprecated `clang_format` alias 迁移到规范名称 `clang-format`，保留
+  `lsp_format="fallback"`；不加入仓库级 C 风格，项目没有 `.clang-format` 时沿用 LLVM fallback。
+- [x] 从空 Mason data 由 Bootstrap 实际安装 clang-format 并验证 receipt、22.1.8 可执行命令；当前
+  完整数据上 0.12.3 得到 5/5 Mason、3/3 parser、`external=0/0` 和 `OK`，全部项目幂等跳过。
+- [x] 0.10.4 与 0.12.3 都在首次保存 C buffer 时通过 Conform 得到相同的四行 clang-format 输出，
+  formatter inventory 只有规范名称；0.10.4 的成功证明该路径不依赖 LSP，三份专用日志均为空。
+- [x] 最终离线矩阵继续得到 25/27/30/32 个活动 spec，四档命令、计划和门槛全部通过。一次重新下载
+  全部 Mason/parser 的组合复测因外部下载环境不可用失败，未记录为全量 clean pass；既有 4/3 clean
+  基线与本次新增 provider 的独立 clean 安装分别保留其准确验证边界。
+
 ## 2026-07-19：显式语言工具链 Bootstrap
 
 - [x] 新增 `lua/darkroam/bootstrap.lua`，在 Lazy setup 后只注册 `:DarkroamBootstrap`；普通启动不加载

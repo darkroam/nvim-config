@@ -14,9 +14,9 @@ local language_specs = {
 		parsers = { "lua" },
 	},
 	c = {
+		mason = { "clang-format" },
 		lsp = { "clangd" },
 		parsers = { "c" },
-		external = { "clang-format" },
 	},
 	elisp = {
 		parsers = { "commonlisp" },
@@ -29,6 +29,7 @@ local language_specs = {
 }
 local mason_executables = {
 	stylua = { "stylua" },
+	["clang-format"] = { "clang-format" },
 	["lua-language-server"] = { "lua-language-server" },
 	clangd = { "clangd" },
 	["tree-sitter-cli"] = { "tree-sitter" },
@@ -71,10 +72,20 @@ function M.plan()
 			local spec = language_specs[language]
 			append_unique(plan.mason, seen.mason, spec.mason)
 			append_unique(plan.external, seen.external, spec.external)
-			if plan.features.lsp then
+		end
+	end
+	if plan.features.lsp then
+		for _, language in ipairs(language_order) do
+			if languages.syntax[language] then
+				local spec = language_specs[language]
 				append_unique(plan.mason, seen.mason, spec.lsp)
 			end
-			if plan.features.treesitter then
+		end
+	end
+	if plan.features.treesitter then
+		for _, language in ipairs(language_order) do
+			if languages.syntax[language] then
+				local spec = language_specs[language]
 				append_unique(plan.parsers, seen.parsers, spec.parsers)
 			end
 		end

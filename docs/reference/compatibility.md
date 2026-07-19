@@ -17,11 +17,11 @@
 
 | Neovim | 档位 | LSP | Telescope | Tree-sitter | 验证状态 |
 | --- | --- | --- | --- | --- | --- |
-| 0.12.3 | 完整 | 启用 | 启用 | `main` 新 API 与 Textobjects | GitHub `main` 的发布后 clone 已通过隔离首次 Lazy、Mason、parser、插件触发、LuaLS、C/Elisp 和 StyLua 验证；统一 bootstrap 的空 Mason/parser 首次安装与幂等复跑也已通过；GUI 仍未完成 |
+| 0.12.3 | 完整 | 启用 | 启用 | `main` 新 API 与 Textobjects | GitHub `main` 的发布后 clone 已通过隔离首次 Lazy、Mason、parser、插件触发、LuaLS、C/Elisp 和 StyLua 验证；Bootstrap 的既有 4/3 clean 基线、新增 clang-format 独立 clean 安装和当前完整 5/3 幂等验证通过；GUI 仍未完成 |
 | 0.11.7+ | 降级 | 启用 | 启用 | 当前栈禁用 | 0.11.7 已通过隔离首次 Lazy、Mason、LSP、Telescope、基础插件和禁用边界实测；更高 0.11 patch 未逐一实测 |
 | 0.11.3-0.11.6 | 降级 | 启用 | 禁用 | 当前栈禁用 | 下界 0.11.3 已通过隔离首次 Lazy、Mason、LSP、基础插件和禁用边界实测；0.11.4-0.11.6 未逐一实测 |
 | 0.11.0-0.11.2 | 基础 | 禁用 | 禁用 | 当前栈禁用 | 设计目标，尚未取得对应二进制实测 |
-| 0.10.x | 基础 | 禁用 | 禁用 | 当前栈禁用 | 0.10.4 已完成启动、基础插件以及 bootstrap 只检查 StyLua 的实际执行验证 |
+| 0.10.x | 基础 | 禁用 | 禁用 | 当前栈禁用 | 0.10.4 已完成启动、基础插件和基础 formatter 的实际执行验证 |
 
 “禁用”表示对应插件不进入 runtimepath、配置不执行、仓库为该插件声明的按键不创建。它不表示 data
 目录中一定没有旧 checkout；判断活动能力必须同时检查版本、Lazy spec 和 runtimepath。
@@ -45,12 +45,12 @@
 
 | Neovim 档位 | Mason 项 | Parser |
 | --- | --- | --- |
-| 基础（0.10.x、0.11.0-0.11.2） | 启用语言的基础 formatter；当前为 `stylua` | 禁用 |
+| 基础（0.10.x、0.11.0-0.11.2） | 启用语言的基础 formatter；当前为 `stylua`、`clang-format` | 禁用 |
 | LSP（0.11.3+） | 上述项目及启用语言的 server；当前为 `lua-language-server`、`clangd` | 禁用 |
 | Tree-sitter（0.12+） | 上述项目及 `tree-sitter-cli` | 启用语言的 parser；当前为 `lua`、`c`、`commonlisp` |
 
-这里的“禁用”意味着不把项目放入计划，而不是尝试加载旧插件 API。外部 formatter 独立于插件门槛检查；
-例如 C 已启用而 `clang-format` 缺失时，即使 clangd 可用，结果仍为 `PARTIAL`。命令不会扩大版本支持
+这里的“禁用”意味着不把项目放入计划，而不是尝试加载旧插件 API。C formatter 在所有档位由 Mason
+管理，不依赖 LSP 门槛；启用 Go 后的 `gofmt` 仍作为外部 formatter 独立检查。命令不会扩大版本支持
 承诺，也不会在普通启动时访问网络。
 
 Tree-sitter 已使用 Lazy 标准冒号 build。发布修复 `03ea599` 后，从 GitHub `main` 全新 clone 的隔离
@@ -103,6 +103,13 @@ LSP、Mason、parser 或 GUI 的结论。
 在四档都存在、启动时没有报告或额外 Mason 加载，并且计划依次为 1/0、3/0、3/0、4/3 个 Mason/parser
 项目。0.12.3 另在空 Mason/parser data 中完成 4/4 工具与 3/3 parser 首次安装、可执行命令和 ABI 加载
 验证，再完成幂等复跑；0.10.4 实际执行只检查并跳过 StyLua。所有对应专用日志为空。
+
+同日将 clang-format 纳入基础 Mason 计划后，最终矩阵的 Mason/parser 数更新为 2/0、4/0、4/0、5/3，
+四档仍保持 25/27/30/32 个活动 spec 并全部通过。空 Mason data 已由 Bootstrap 实际安装 clang-format
+22.1.8；当前完整数据的 0.12.3 Bootstrap 为 5/5、3/3、无外部缺项并返回 `OK`。0.10.4 和 0.12.3
+均通过首次保存的真实 C 格式化，使用规范 formatter 名 `clang-format`，对应专用日志为空。一次重新
+下载全部项目的组合复测因外部下载环境不可用失败，因此没有替代既有 4/3 clean 基线或冒充新的全量
+clean pass。
 
 ## 变更规则
 

@@ -84,16 +84,21 @@ ToggleTerm 仍继承 `vim.o.shell` 的 Zsh。Lazygit、Node、ncdu、htop、Pyth
 | `williamboman/mason.nvim` | 活动；基础档位 | `:Mason` UI 与 PATH；machine-local package manager；由显式 `:DarkroamBootstrap` 按需同步加载 |
 | `williamboman/mason-lspconfig.nvim` | 条件活动；`lsp` 档位 | `:LspInstall`/`:LspUninstall` 时按需加载，生成 `ensure_installed`，`automatic_enable=false` |
 | `neovim/nvim-lspconfig` | 条件活动；`lsp` 档位、启动加载 | server definitions、`vim.lsp.config/enable`、LspAttach 映射；不让首个文件错过 FileType attach |
-| `stevearc/conform.nvim` | 活动；基础档位 | 显式依赖 Mason 建立 formatter PATH；保存格式化和 `lsp_format="fallback"` |
+| `stevearc/conform.nvim` | 活动；基础档位 | 显式依赖 Mason 建立 formatter PATH；C 使用规范名称 `clang-format`；保存格式化和 `lsp_format="fallback"` |
 
 Mason package 存在不等于 LSP 自动启用。Document highlight 由 Neovim 原生 LSP autocommand 提供，不再
 依赖使用 deprecated API 的 Illuminate。StyLua 只作为 formatter；`lua_ls`、`clangd` 和可选 `gopls`
-由语言表选择。基础档位不加载当前 nvim-lspconfig 或相应 buffer-local 按键。
+由语言表选择。`clang-format` 是独立 Mason formatter，不会作为 LSP 启动；基础档位不加载当前
+nvim-lspconfig 或相应 buffer-local 按键，但仍可格式化 C。
 
 `:DarkroamBootstrap` 不是插件命令代理，而是 `lua/darkroam/bootstrap.lua` 在 Lazy setup 后注册的仓库
 命令，因此所有支持档位都存在。调用前不会加载 Mason 或联网；调用后按当前版本和语言表安装 Mason
 项目，完整档位再调用已启动加载的 nvim-treesitter 安装 parser。`:LspInstall`、`:MasonInstall` 和
 `:DarkroamTSInstall` 继续保留为单项诊断入口。
+
+Conform 的旧配置名 `clang_format` 是当前上游保留的 deprecated alias，仓库已改用规范名称
+`clang-format`。Mason 同名 package 22.1.8 在 Neovim PATH 中可执行；0.10.4 和 0.12.3 均已从未格式化
+C buffer 的首次保存得到预期 clang-format 输出，证明基础档位不依赖 clangd 或 LSP fallback。
 
 LuaLS 3.18.2 的沙箱内 initialize 超时已由无 `workspace.library` 的最小探针复现，并在沙箱外排除：
 同一 package 的最小探针 59 ms 完成，本仓库真实配置 55 ms 自动 attach。真实配置还确认 root、当前

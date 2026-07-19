@@ -5,8 +5,8 @@
 
 ## P1：安装与工具链
 
-- [ ] 补齐 C 格式化 provider 或调整 C 的 Conform 行为；区分 Mason `clangd` 和独立
-  `clang-format`，未安装前不能把实际 C 格式化记为通过。
+- [ ] 为 `:DarkroamBootstrap` 增加退出/取消状态：实测手动中断 Neovim 时，Mason terminator 会回调失败
+  项，当前计数归零后仍可能在退出阶段进入 parser 安装；后续应阻止新阶段启动并只生成一次取消摘要。
 - [ ] 在升级到 clangd 23 或更新 nvim-lspconfig 前，处理其将移除的旧 `offsetEncoding` 扩展：当前
   锁定 nvim-lspconfig 会声明该能力，clangd 22.1.6 记录弃用提示但 initialize、hover 和 shutdown
   均通过；后续方案必须验证标准 `positionEncodings` 协商，而不是只过滤 server stderr。

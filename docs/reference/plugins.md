@@ -59,9 +59,10 @@ Comment.nvim 的 toggler 与 opleader 不再复用同一完整键串，避免 op
 和 Insert mapping 打开，确认 Zsh、`<Esc>`、五个 terminal-local 映射和关闭路径。进程回读与截图还
 确认图标、边框、中文、状态栏和布局正常。该结果不替代 0.10/0.11 的独立降级结论。
 
-ToggleTerm 仍继承 `vim.o.shell` 的 Zsh，保留 `,xc`、`:ToggleTerm` 和原生 `:TermExec`。仓库不创建
-Lazygit、Node、ncdu、htop、Python 的 Terminal 对象、全局 Lua helper、专用命令或按键；临时外部命令
-由用户显式传给 `:TermExec cmd="..."`，依赖边界见 [`dependencies.md`](dependencies.md)。
+ToggleTerm 继承 `vim.o.shell`：Unix 为 Zsh，Windows 为 `pwsh` 或 `powershell`，保留 `,xc`、`:ToggleTerm`
+和原生 `:TermExec`。仓库不创建 Lazygit、Node、ncdu、htop、Python 的 Terminal 对象、全局 Lua helper、
+专用命令或按键；临时外部命令由用户显式传给 `:TermExec cmd="..."`，依赖边界见
+[`dependencies.md`](dependencies.md)。
 
 发布修复 `03ea599` 后的 GitHub clean clone 已在 Neovim 0.12.3 和 0.10.4 分别通过
 `:NvimTreeOpen`、`:ToggleTerm`、`:ZenMode` 的真实加载与关闭路径，并确认 ToggleTerm 使用 Zsh；

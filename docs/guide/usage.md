@@ -9,7 +9,7 @@
 - Colorscheme 是 Neosolarized，状态栏由 Lualine 提供；
 - `,e` 在普通和 LSP buffer 中都切换 NvimTree；
 - `<Tab>` 与 `<S-Tab>` 在 Bufferline 的 tab 模式中切换；
-- `,xc` 打开使用 Zsh 的浮动 ToggleTerm；
+- `,xc` 打开使用平台 shell 的浮动 ToggleTerm（Unix 为 Zsh，Windows 为 `pwsh`/`powershell`）；
 - `,ff` 切换 ZenMode。
 
 插件按事件、命令或按键加载。某个插件已经下载不表示它已进入 runtimepath；版本条件不满足时，对应
@@ -69,8 +69,9 @@ git.nvim 或 Fugitive，也没有为它们保留失效按键。不要依靠 data
 
 ## 终端与外部命令
 
-`:!` 和 ToggleTerm 使用配置中的 `zsh`；`,xc` 切换普通浮动终端。需要偶尔在新 terminal 中执行外部
-命令时使用 ToggleTerm 原生入口，例如 `:TermExec cmd="lazygit"`，其中 `cmd` 必须加引号。仓库不为
+`:!` 和 ToggleTerm 使用平台 shell：Unix 为 `zsh`，Windows 为 `pwsh` 或 `powershell`；`,xc` 切换普通
+浮动终端。需要偶尔在新 terminal 中执行外部命令时使用 ToggleTerm 原生入口，例如
+`:TermExec cmd="lazygit"`，其中 `cmd` 必须加引号。仓库不为
 Lazygit、Node、ncdu、htop 或 Python 创建专用 helper、命令或按键，也不把它们列为 ToggleTerm 依赖；
 执行前由用户确认实际命令名和 PATH，例如系统只有 `python3` 时就显式使用 `cmd="python3"`。
 
@@ -98,7 +99,9 @@ LSP/诊断浮窗、中文及图标没有方框、截断或明显宽度错位。
 
 ### `:!` 或 ToggleTerm 无法启动
 
-运行 `:set shell?`，并在相同环境执行 `command -v zsh`。当前配置不会自动回退到 Bash 或 Fish。
+运行 `:set shell?` 和 `:set shellcmdflag?`。Unix 执行 `command -v zsh`；Windows 执行
+`Get-Command pwsh,powershell`。Windows 还要确认 `shellcmdflag` 包含 `-Command`，不能保留 `cmd.exe`
+的 `/s /c`。
 
 ### LSP 或 formatter 命令在登录 shell 中不可见
 

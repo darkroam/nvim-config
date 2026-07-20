@@ -5,12 +5,32 @@ vim.opt.shortmess:append("c")
 local automatic_comment_formatoptions = { "c", "r", "o" }
 vim.opt.formatoptions:remove(automatic_comment_formatoptions)
 
+local is_windows = vim.fn.has("win32") == 1
+local shell = "zsh"
+if is_windows then
+	local powershell = vim.fn.executable("pwsh") == 1 and "pwsh" or "powershell"
+	local shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command "
+		.. "[Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new();"
+		.. "$PSDefaultParameterValues['Out-File:Encoding']='utf8';"
+	if powershell == "pwsh" then
+		shellcmdflag = shellcmdflag .. "$PSStyle.OutputRendering='PlainText';"
+	end
+
+	shell = powershell
+	vim.opt.shelltemp = false
+	vim.opt.shellcmdflag = shellcmdflag
+	vim.opt.shellpipe = "> %s 2>&1"
+	vim.opt.shellredir = "> %s 2>&1"
+	vim.opt.shellquote = ""
+	vim.opt.shellxquote = ""
+end
+
 local options = {
 	-- title = true,
 	backup = false, -- creates a backup file
 	backupskip = { "/tmp/*", "/private/tmp/*" },
 	backspace = { "start", "eol", "indent" },
-	shell = "zsh",
+	shell = shell,
 	showcmd = true,
 	clipboard = "unnamedplus", -- allows neovim to access the system clipboard
 	cmdheight = 2, -- more space in the neovim command line for displaying messages

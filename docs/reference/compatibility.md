@@ -1,6 +1,6 @@
 # 兼容性与支持范围
 
-本文是 Neovim 版本档位、功能门槛、降级行为和实测状态的唯一权威来源。README、安装指南、插件清单
+本文是 Neovim 版本档位、功能门槛、降级行为、平台边界和实测状态的唯一权威来源。README、安装指南、插件清单
 和用户指南只引用本文，不各自维护兼容矩阵。
 
 ## 支持策略
@@ -12,6 +12,7 @@
 - 锁定插件要求更新 Neovim 时，通过 `lua/darkroam/compat.lua` 和 Lazy `cond` 主动禁用对应功能；
 - 旧版不自动切换到另一插件分支、另一 commit 或未记录的本机插件；
 - “设计兼容”与“已在对应二进制实测”必须分开记录。
+- Linux 是当前完整实测平台；Windows 原生支持必须经过目标机器 clean clone 和交互验收后才能升级为已验证。
 
 ## 版本矩阵
 
@@ -91,6 +92,20 @@ LSP buffer-local 诊断浮窗已从 `,e` 迁移到 `,df`，使基础档位提供
 buffer 分别实际打开诊断浮窗和 NvimTree。四档的 Neovim 内置 `<C-w>d` 均保留，最终离线矩阵继续通过。
 
 ## GUI 与交互验证边界
+
+### Windows 0.12 平台边界
+
+原生 Windows 使用 Neovim 0.12 时，配置目录通常为 `%LOCALAPPDATA%\nvim`，插件、Mason 和状态目录为
+`%LOCALAPPDATA%\nvim-data`，缓存目录为 `%TEMP%\nvim-data`。`init.lua` 的平台分支保留 Windows
+原生剪贴板；`darkroam.options` 使用 `pwsh`（缺失时为 `powershell`）并设置官方 PowerShell shell 参数。
+Windows 不需要 `xclip` 或 `wl-copy`，但完整安装仍需要 Git、GNU `make`、Git `sh.exe` 和可用 C compiler，
+因为 LuaSnip 的 `make install_jsregexp` 和 nvim-treesitter parser build 会调用它们。锁文件只锁 Git 插件
+commit，Mason Windows 二进制和 parser build 必须在目标机重新安装。
+
+这项支持目前是代码设计和文档边界，不代表本仓库已经取得 Windows 实机通过结果；验证前不得把 Windows
+写入版本矩阵的“完整”栏。原生 Windows 的 clean clone、Lazy/Mason/parser、LuaLS、clangd、Conform、
+ToggleTerm、Telescope、剪贴板和 Nerd Font 显示应按 [`installation.md`](../guide/installation.md) 的
+Windows 清单逐项记录。
 
 2026-07-19 使用真实 X11 `st`、Neovim 0.12.3、临时 state/cache 和编辑目录完成交互样本；配置读取
 当前仓库，启动前核对 32/32 个现有 checkout 与 lockfile 一致，没有下载、更新或修改 plugin data。

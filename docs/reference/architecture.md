@@ -20,7 +20,7 @@
 | --- | --- |
 | `init.lua` | 启用 Lua loader，固定核心模块顺序，选择 OS 专用选项 |
 | `.stylua.toml` | 全部 tracked Lua 共用的格式、syntax 和换行合同 |
-| `lua/darkroam/options.lua` | 编辑器选项和仓库 autocommand |
+| `lua/darkroam/options.lua` | 编辑器选项、平台 shell 选择和仓库 autocommand |
 | `lua/darkroam/keymaps.lua` | 插件无关的全局按键 |
 | `lua/darkroam/languages.lua` | LSP、Mason、Conform 和 Tree-sitter 共用的语言开关 |
 | `lua/darkroam/compat.lua` | 版本比较、功能门槛和能力查询 |
@@ -71,6 +71,11 @@ init.lua
 内置 ftplugin 之后删除 buffer-local `c`、`r`、`o`。必须在 FileType 边界重复处理，因为 Lua、C 等
 ftplugin 会重新加入这些 flag；不能把 `cro` 作为一个连续字符串删除，也不能给 flag option 的
 `append()` 传 Lua list。其他 filetype-local flag 保持上游值。
+
+平台 shell 在 `darkroam.options` 中选择：Unix 保持 `zsh`；Windows 优先使用 `pwsh`，没有 PowerShell 7
+时回退 `powershell`，并同时设置 Neovim 0.12 官方要求的 `shellcmdflag`、`shellpipe`、`shellquote`、
+`shellxquote` 和 `shelltemp`。ToggleTerm 读取最终的 `vim.o.shell`，因此不会自行再选一套 shell；
+Windows 的 Git `sh.exe` 只服务于 LuaSnip 原生 build，不成为交互 shell。
 
 Lazy 重置 runtimepath 前会探测 Neovim 自带 `parser/lua.so` 的非 data runtime 根并显式保留，避免发行版
 把 parser 放在不同 lib 目录时丢失内置 parser。降级档位还会移除公共 `data/site`，防止读取旧 Packer

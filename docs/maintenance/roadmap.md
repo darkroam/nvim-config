@@ -5,7 +5,9 @@
 
 ## P2：维护体验
 
-当前没有已确认的待办。新的发现仍须先按维护流程提交方案，不能直接加入实现范围。
+- [ ] 完成原生 Windows Neovim 0.12 支持：平台化 shell、PowerShell 参数、Windows 安装文档和
+  兼容 smoke。代码设计和文档已获批准，待 Windows 实机 clean clone、Lazy/Mason/parser、LSP、formatter、
+  ToggleTerm 和剪贴板验证后移入 `history.md`；在实机验证前不宣称 Windows 完整支持。
 
 ## 暂缓
 

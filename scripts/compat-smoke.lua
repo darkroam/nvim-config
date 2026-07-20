@@ -48,7 +48,15 @@ end
 check(actual_version == expected_version, "binary-version", actual_version)
 check(profile ~= nil, "supported-profile", actual_version)
 profile = profile or { lsp = false, telescope = false, treesitter = false, mason = {}, parsers = {} }
-check(vim.o.shell == "zsh", "shell-zsh", vim.o.shell)
+local expected_shell = "zsh"
+if vim.fn.has("win32") == 1 then
+	expected_shell = vim.fn.executable("pwsh") == 1 and "pwsh" or "powershell"
+end
+check(vim.o.shell == expected_shell, "shell-platform", vim.o.shell)
+if vim.fn.has("win32") == 1 then
+	check(vim.o.shellcmdflag:find("-Command", 1, true) ~= nil, "shell-powershell-command", vim.o.shellcmdflag)
+	check(vim.o.shellcmdflag:find("/s /c", 1, true) == nil, "shell-not-cmd", vim.o.shellcmdflag)
+end
 
 local lock_path = vim.fn.stdpath("config") .. "/lazy-lock.json"
 local lock_ok, lock = pcall(function()

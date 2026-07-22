@@ -19,6 +19,7 @@
 | 路径 | 职责 |
 | --- | --- |
 | `init.lua` | 启用 Lua loader，固定核心模块顺序，选择 OS 专用选项 |
+| `.gitattributes` | 全部 tracked 文本共用的跨平台 LF working-tree 合同 |
 | `.stylua.toml` | 全部 tracked Lua 共用的格式、syntax 和换行合同 |
 | `lua/darkroam/options.lua` | 编辑器选项、平台 shell 选择和仓库 autocommand |
 | `lua/darkroam/keymaps.lua` | 插件无关的全局按键 |
@@ -43,6 +44,12 @@
 | `scripts/check-lua-format.py` | 发现 StyLua，检查 tracked Lua 的编码、末尾换行、格式和 AST 等价性 |
 | `scripts/check-compat.py` | 用显式 Neovim 二进制和预恢复 Lazy data 编排离线兼容性矩阵 |
 | `scripts/compat-smoke.lua` | 在真实 Neovim 进程内检查版本门槛、插件状态、命令、按键、基础触发和取消路径 |
+
+根 `.gitattributes` 使用 `* text=auto eol=lf`：Git 识别为文本的 tracked 文件在所有平台都以 LF
+checkout，识别为 binary 的文件不做行尾转换。该仓库级合同优先于 Windows 用户的
+`core.autocrlf=true`，因此 Lazy 以 LF 重写 `lazy-lock.json` 时不会产生仅由 CRLF/LF 转换导致的工作树
+警告或 diff；未来若加入必须使用 CRLF 的脚本，应增加窄化到具体扩展名的 override，而不是放宽全库
+规则。
 
 不使用仓库根的 `plugin/*.lua` 或 `after/plugin/*.lua` 配置入口。活动插件的声明、加载条件、配置和仓库
 按键由对应 Lazy spec 共同拥有，避免 provider 被禁用后仍由 runtime 自动执行配置。

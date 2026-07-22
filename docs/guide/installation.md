@@ -145,6 +145,19 @@ git clone https://github.com/darkroam/nvim-config `
 nvim
 ```
 
+仓库根 `.gitattributes` 固定 tracked 文本的 working-tree 行尾为 LF。该规则在 clone 时覆盖 Windows
+常见的 `core.autocrlf=true`，无需为了本仓库修改全局 Git 配置；Lazy 后续以 LF 重写
+`lazy-lock.json` 时，也不应再出现 `LF will be replaced by CRLF` 警告。可在仓库中验证实际属性：
+
+```powershell
+git check-attr text eol -- lazy-lock.json
+git ls-files --eol
+```
+
+`lazy-lock.json` 应报告 `text: auto` 与 `eol: lf`，其 working-tree 标记应为 `w/lf`。如果仍有行尾
+警告，先确认 clone 已包含 `.gitattributes`，不要用 `git add --renormalize .` 制造无关的全库改写，
+也不要把警告误认为插件 commit 已变化；先用 `git diff -- lazy-lock.json` 检查真实内容。
+
 首次启动依次执行：
 
 1. clone `lua/darkroam/lazy.lua` 中固定 commit 的 lazy.nvim；

@@ -3,6 +3,19 @@
 本文件只记录已经完成并验证的重要项目，不复制原始日志或逐 commit 流水账。待办和有恢复条件的暂缓
 工作统一见 [`roadmap.md`](roadmap.md)。
 
+## 2026-07-22：建立仓库级 LF 行尾合同
+
+- [x] 新增根 `.gitattributes`，用 `* text=auto eol=lf` 固定 Git 识别为文本的 tracked 文件在各平台
+  working tree 中使用 LF，同时保留 binary 自动识别；没有修改全局或仓库 `core.autocrlf`。
+- [x] 在架构、安装和维护文档中登记规则所有权、Windows clone 行为、故障判断和未来 CRLF 扩展名
+  override 边界；无需对当前文件执行 renormalize，`lazy-lock.json` 内容和插件 commit 均未变化。
+- [x] `scripts/check-docs.py` 现在要求 `.gitattributes` 存在、有文档归属并包含基准规则，同时通过
+  `git check-attr` 验证 `lazy-lock.json` 的最终属性仍为 `text=auto`、`eol=lf`，避免后续 override
+  静默破坏合同。
+- [x] 文档合同、18 个 tracked Lua 格式和 whitespace 检查通过；原有 37 个 tracked 文件及新增
+  `.gitattributes` 均为 LF。使用 `core.autocrlf=true` 模拟 Windows Git 时，`lazy-lock.json` 没有
+  行尾警告或内容 diff。
+
 ## 2026-07-20：定界 LuaLS 临时 workspace root
 
 - [x] 确认 0.12.3 消费锁定 nvim-lspconfig 的新版 `lsp/lua_ls.lua` 分级 root markers，仓库只叠加

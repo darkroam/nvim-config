@@ -29,6 +29,7 @@ REQUIRED_DOCS = (
     "docs/maintenance/history.md",
 )
 REQUIRED_SUPPORT_FILES = (
+    ".gitattributes",
     ".stylua.toml",
     "scripts/check-compat.py",
     "scripts/check-lua-format.py",
@@ -336,6 +337,25 @@ def check_portability(errors: list[str]) -> None:
         if ABSOLUTE_HOME_RE.search(read(relative)):
             errors.append(f"machine-specific absolute home path in {relative}")
 
+    attributes = {
+        line.strip()
+        for line in read(".gitattributes").splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    }
+    if "* text=auto eol=lf" not in attributes:
+        errors.append(".gitattributes is missing the tracked-text LF contract")
+
+    expected = {
+        "lazy-lock.json: text: auto",
+        "lazy-lock.json: eol: lf",
+    }
+    actual = set(git_lines("check-attr", "text", "eol", "--", "lazy-lock.json"))
+    if actual != expected:
+        errors.append(
+            "lazy-lock.json has unexpected Git attributes: "
+            + ", ".join(sorted(actual))
+        )
+
 
 def main() -> int:
     errors: list[str] = []
@@ -365,7 +385,7 @@ def main() -> int:
     print(
         "documentation check passed: structure, navigation, links, source ownership, "
         "support scripts, Lazy inventory/lockfile, compatibility gates, language state, "
-        "custom keymaps, maintenance roles, and portability"
+        "custom keymaps, maintenance roles, portability, and LF attributes"
     )
     return 0
 
